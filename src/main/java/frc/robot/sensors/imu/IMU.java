@@ -17,6 +17,7 @@ public final class IMU {
     /**
      * Initializes the singleton with a specific IMU. Must be called before calling
      * {@link getInstance}. If called twice, an error is thrown.
+     * 
      * @param sensor IMUBase instance to wrap.
      */
     public static void initializeWithSensor(IMUBase sensor) {
@@ -29,6 +30,7 @@ public final class IMU {
 
     /**
      * Singleton accessor.
+     * 
      * @return The IMU singleton.
      */
     public static IMU getInstance() {
