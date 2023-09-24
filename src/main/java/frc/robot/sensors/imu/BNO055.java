@@ -1,8 +1,8 @@
 package frc.robot.sensors.imu;
 
 /**
- * Intermediary implementation and glue code for the NavX2 IMU. Instead of using
- * this directly, please use {@link IMU} instead.
+ * Intermediary implementation and glue code for the BNO055 IMU. Instead of
+ * using this directly, please use {@link IMU} instead.
  */
 public class BNO055 extends IMUBase {
     public BNO055() {
