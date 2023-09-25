@@ -5,6 +5,6 @@ package frc.robot.sensors.imu;
  * order to initialize the singleton which can then be used in the main robot
  * code.
  */
-public abstract class IMUBase {
-    abstract Orientation getOrientation();
+public interface IMUBase {
+    public Orientation getOrientation();
 }

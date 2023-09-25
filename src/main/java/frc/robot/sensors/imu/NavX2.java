@@ -6,7 +6,7 @@ import com.kauailabs.navx.frc.AHRS;
  * Intermediary implementation and glue code for the NavX2 IMU. Instead of using
  * this directly, please use {@link IMU} instead.
  */
-public class NavX2 extends IMUBase {
+public class NavX2 implements IMUBase {
     private static NavX2 instance;
 
     private AHRS ahrs;
@@ -22,15 +22,15 @@ public class NavX2 extends IMUBase {
      * 
      * @return The NavX2 singleton to inject into {@link IMU}.
      */
-    public NavX2 getInstance() {
-        if (this.instance == null) {
-            this.instance = new NavX2();
+    public static NavX2 getInstance() {
+        if (NavX2.instance == null) {
+            NavX2.instance = new NavX2();
         }
 
-        return this.instance;
+        return NavX2.instance;
     }
 
-    Orientation getOrientation() {
+    public Orientation getOrientation() {
         // TODO: Implement me
         return new Orientation(this.ahrs.getPitch(), this.ahrs.getFusedHeading(), this.ahrs.getRoll());
     }
