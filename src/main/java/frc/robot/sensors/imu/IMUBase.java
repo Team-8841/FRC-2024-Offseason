@@ -7,4 +7,6 @@ package frc.robot.sensors.imu;
  */
 public interface IMUBase {
     public Orientation getOrientation();
+    public boolean isInitialized();
+    public boolean isSensorPresent();
 }

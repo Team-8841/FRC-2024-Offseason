@@ -36,4 +36,12 @@ public class BNO055 implements IMUBase {
 
         return new Orientation(vector[2], vector[1], vector[0]);
     }
+    
+    public boolean isInitialized() {
+        return this.internalBNO055.isInitialized();
+    }
+
+    public boolean isSensorPresent() {
+        return this.internalBNO055.isSensorPresent();
+    }
 }

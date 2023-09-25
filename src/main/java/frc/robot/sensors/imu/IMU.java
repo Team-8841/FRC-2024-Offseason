@@ -68,4 +68,18 @@ public final class IMU {
     public double getRoll() {
         return internalSensor.getOrientation().roll;
     }
+
+    /**
+     * @return If the IMU is initialized yet or not.
+     */
+    public boolean isInitialized() {
+        return internalSensor.isInitialized();
+    }
+
+    /**
+     * @return If the IMU is present or not.
+     */
+    public boolean isSensorPresent() {
+        return internalSensor.isSensorPresent();
+    }
 }

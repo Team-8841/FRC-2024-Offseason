@@ -31,7 +31,14 @@ public class NavX2 implements IMUBase {
     }
 
     public Orientation getOrientation() {
-        // TODO: Implement me
         return new Orientation(this.ahrs.getPitch(), this.ahrs.getFusedHeading(), this.ahrs.getRoll());
+    }
+
+    public boolean isInitialized() {
+        return true;
+    }
+
+    public boolean isSensorPresent() {
+        return this.ahrs.isConnected();
     }
 }
