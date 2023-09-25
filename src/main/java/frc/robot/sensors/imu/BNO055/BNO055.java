@@ -14,7 +14,8 @@ public class BNO055 implements IMUBase {
     private BNO055IO internalBNO055;
 
     private BNO055() {
-        this.internalBNO055 = BNO055IO.getInstance(BNO055IO.opmode_t.OPERATION_MODE_IMUPLUS, BNO055IO.vector_type_t.VECTOR_EULER);
+        this.internalBNO055 = BNO055IO.getInstance(BNO055IO.opmode_t.OPERATION_MODE_IMUPLUS,
+                BNO055IO.vector_type_t.VECTOR_EULER);
     }
 
     /**
@@ -32,7 +33,7 @@ public class BNO055 implements IMUBase {
 
     public Orientation getOrientation() {
         double[] vector = this.internalBNO055.getVector();
-        
+
         return new Orientation(vector[2], vector[1], vector[0]);
     }
 }
