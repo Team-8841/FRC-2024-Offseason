@@ -17,6 +17,11 @@ public class NavX2 extends IMUBase {
         this.ahrs = new AHRS();
     }
 
+    /**
+     * Singleton accessor.
+     * 
+     * @return The NavX2 singleton to inject into {@link IMU}.
+     */
     public NavX2 getInstance() {
         if (this.instance == null) {
             this.instance = new NavX2();
