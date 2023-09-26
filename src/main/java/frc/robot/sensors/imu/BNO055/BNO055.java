@@ -4,8 +4,7 @@ import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.Orientation;
 
 /**
- * Intermediary implementation and glue code for the BNO055 IMU. Instead of
- * using this directly, please use {@link IMU} instead.
+ * IMU container for the BNO055.
  */
 public class BNO055 implements IMU {
     private BNO055IO internalBNO055;
