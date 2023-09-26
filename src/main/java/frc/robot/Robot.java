@@ -4,17 +4,39 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
+
+  private PowerDistribution pdh;
 
   @Override
   public void robotInit() {
+    if (isReal()) {
+      Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to usb stick
+      Logger.getInstance().addDataReceiver(new NT4Publisher()); // Logs to NT4
+      this.pdh = new PowerDistribution(1, ModuleType.kRev);
+    } else {
+      setUseTiming(false); // Run as fast as possible
+      String logPath = LogFileUtil.findReplayLog(); // Get the replay log from AdvantageScope (or prompt the user)
+      Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+    }
+
+    Logger.getInstance().start();
+
     m_robotContainer = new RobotContainer();
   }
 
@@ -24,7 +46,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    this.pdh.close();
+  }
 
   @Override
   public void disabledPeriodic() {}
