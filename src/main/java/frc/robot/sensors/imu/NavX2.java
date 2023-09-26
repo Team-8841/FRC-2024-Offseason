@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.SPI;
 public class NavX2 implements IMU {
     private AHRS ahrs;
 
-    private NavX2() {
+    public NavX2() {
         this.ahrs = new AHRS(SPI.Port.kMXP);
     }
 
