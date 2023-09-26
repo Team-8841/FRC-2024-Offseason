@@ -1,85 +1,55 @@
 package frc.robot.sensors.imu;
 
 /**
- * The main IMU singleton. This is a glue layer between an {@link IMUBase}
- * implementor and the main robot code. Please use this class whenever you want
- * to get data from the IMU.
+ * Interface used by all IMU's.
  */
-public final class IMU {
-    private static IMU instance;
-
-    private IMUBase internalSensor;
-
-    private IMU(IMUBase internalSensor) {
-        this.internalSensor = internalSensor;
-    }
-
+public interface IMU {
     /**
-     * Initializes the singleton with a specific IMU. Must be called before calling
-     * {@link getInstance}. If called twice, an error is thrown.
+     * Get's the IMU's current orientation.
      * 
-     * @param sensor IMUBase instance to wrap.
+     * @return The current 3d orientation (pitch, roll, and yaw) of the IMU. All
+     *         0-360 degrees
      */
-    public static void initializeWithSensor(IMUBase sensor) {
-        if (IMU.instance != null) {
-            throw new Error("IMU has already been initialized!");
-        }
-
-        IMU.instance = new IMU(sensor);
-    }
+    public Orientation getOrientation();
 
     /**
-     * Singleton accessor.
+     * Gets the IMU's current pitch angle.
      * 
-     * @return The IMU singleton.
+     * @return The current pitch angle. 0-360 degrees
      */
-    public static IMU getInstance() {
-        if (IMU.instance == null) {
-            throw new Error("IMU has not yet been initalized!");
-        }
-
-        return IMU.instance;
+    public default double getPitch() {
+        return this.getOrientation().pitch;
     }
 
     /**
-     * @return Current orientation of the IMU.
+     * Gets the IMU's current yaw angle.
+     * 
+     * @return The current yaw angle. 0-360 degrees
      */
-    public Orientation getOrientation() {
-        return internalSensor.getOrientation();
+    public default double getYaw() {
+        return this.getOrientation().yaw;
     }
 
     /**
-     * @return Current pitch of the IMU.
+     * Gets the IMU's current roll angle.
+     * 
+     * @return The current roll angle. 0-360 degrees
      */
-    public double getPitch() {
-        return internalSensor.getOrientation().pitch;
+    public default double getRoll() {
+        return this.getOrientation().roll;
     }
 
     /**
-     * @return Current yaw of the IMU.
+     * Get's if the IMU has been initialized.
+     * 
+     * @return If the IMU has been initialized.
      */
-    public double getYaw() {
-        return internalSensor.getOrientation().yaw;
-    }
+    public boolean isInitialized();
 
     /**
-     * @return Current roll of the IMU.
+     * Get's if the IMU is present.
+     * 
+     * @return If the IMU is present.
      */
-    public double getRoll() {
-        return internalSensor.getOrientation().roll;
-    }
-
-    /**
-     * @return If the IMU is initialized yet or not.
-     */
-    public boolean isInitialized() {
-        return internalSensor.isInitialized();
-    }
-
-    /**
-     * @return If the IMU is present or not.
-     */
-    public boolean isSensorPresent() {
-        return internalSensor.isSensorPresent();
-    }
+    public boolean isSensorPresent();
 }
