@@ -6,22 +6,5 @@ package frc.robot.sensors.fusedposition;
  * orientation.
  */
 public class FusedPosition {
-    private static FusedPosition instance;
-
-    // TODO: Implement me.
-
-    private FusedPosition() {}
-
-    /**
-     * Singleton accessor.
-     * 
-     * @return The FusedPosition singleton.
-     */
-    public FusedPosition getInstance() {
-        if (FusedPosition.instance == null) {
-            FusedPosition.instance = new FusedPosition();
-        }
-
-        return FusedPosition.instance;
-    }
+    // TODO: Implement me!
 }

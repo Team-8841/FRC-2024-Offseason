@@ -5,8 +5,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 
 /**
- * Intermediary implementation and glue code for the NavX2 IMU. Instead of using
- * this directly, please use {@link IMU} instead.
+ * IMU Container for the NavX2 IMU.
  */
 public class NavX2 implements IMU {
     private AHRS ahrs;
