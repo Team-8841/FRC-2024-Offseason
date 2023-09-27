@@ -8,6 +8,8 @@ To generate the javadocs run `./gradlew generateDocs` in the root directory of t
 
 ## Libraries
 
+[AdvantageKit (Team 6328)](https://github.com/Mechanical-Advantage/AdvantageKit)
+
 [NavX (Kauai Labs)](https://dev.studica.com/releases/2023/NavX.json)
 
 [Pheonix (CTR-Electronics)](https://maven.ctr-electronics.com/release/com/ctre/phoenix/Phoenix5-frc2023-latest.json)
