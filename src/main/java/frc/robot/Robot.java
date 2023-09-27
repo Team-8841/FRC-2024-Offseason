@@ -24,18 +24,46 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    if (isReal()) {
-      Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to usb stick
-      Logger.getInstance().addDataReceiver(new NT4Publisher()); // Logs to NT4
-      this.pdh = new PowerDistribution(1, ModuleType.kRev);
-    } else {
-      setUseTiming(false); // Run as fast as possible
-      String logPath = LogFileUtil.findReplayLog(); // Get the replay log from AdvantageScope (or prompt the user)
-      Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+    Logger logger = Logger.getInstance();
+    
+    // Record metadata
+    logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        logger.recordMetadata("GitDirty", "Unknown");
+        break;
     }
 
-    Logger.getInstance().start();
+    if (isReal()) {
+      // Log to usb stick
+      logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); 
+      // Logs to NT4
+      logger.addDataReceiver(new NT4Publisher()); 
+      // Enables logging of PDH data
+      this.pdh = new PowerDistribution(1, ModuleType.kRev); 
+    } else {
+      // Run as fast as possible
+      setUseTiming(false); 
+      // Get the replay log from AdvantageScope (or prompt the user)
+      String logPath = LogFileUtil.findReplayLog();;
+      // Read replay log
+      logger.setReplaySource(new WPILOGReader(logPath)); 
+      // Log to a file
+      logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+    }
+
+    logger.start();
 
     m_robotContainer = new RobotContainer();
   }
@@ -46,9 +74,7 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {
-    this.pdh.close();
-  }
+  public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {}
