@@ -1,12 +1,14 @@
 package frc.robot.sensors.imu;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+
 /**
  * Simulated IMU used during simulations.
  */
 public class SimulatedIMU implements IMU {
     @Override
-    public Orientation getOrientation() {
-        return new Orientation(0, 0, 0);
+    public Rotation3d getOrientation() {
+        return new Rotation3d();
     }
 
     @Override

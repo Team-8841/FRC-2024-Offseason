@@ -15,3 +15,5 @@ To generate the javadocs run `./gradlew generateDocs` in the root directory of t
 [Pheonix (CTR-Electronics)](https://maven.ctr-electronics.com/release/com/ctre/phoenix/Phoenix5-frc2023-latest.json)
 
 [REVLib (REV Robotics)](https://software-metadata.revrobotics.com/REVLib-2023.json)
+
+We also used a lot of code from [BaseFalconSwerve (Team 364)](https://github.com/Team364/BaseFalconSwerve/), most notably `src/main/java/frc/lib/**` (basically verbatim) and several other files.

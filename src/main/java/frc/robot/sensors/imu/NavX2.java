@@ -2,6 +2,8 @@ package frc.robot.sensors.imu;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.SPI;
 
 /**
@@ -12,11 +14,13 @@ public class NavX2 implements IMU {
 
     public NavX2() {
         this.ahrs = new AHRS(SPI.Port.kMXP);
+        this.ahrs.zeroYaw();
     }
 
     @Override
-    public Orientation getOrientation() {
-        return new Orientation(this.ahrs.getPitch(), this.ahrs.getFusedHeading(), this.ahrs.getRoll());
+    public Rotation3d getOrientation() {
+        return new Rotation3d(new Quaternion(this.ahrs.getQuaternionW(), this.ahrs.getQuaternionX(),
+                this.ahrs.getQuaternionY(), this.ahrs.getQuaternionZ()));
     }
 
     @Override

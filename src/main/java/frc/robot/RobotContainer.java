@@ -12,7 +12,6 @@ import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimulatedIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.MixedSwerveModuleIO;
-import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 
 public class RobotContainer {
@@ -23,30 +22,34 @@ public class RobotContainer {
   private DriveTrainSubsystem sweveDriveTrainSubsystem;
 
   public RobotContainer() {
-    SwerveModuleIO blModule, brModule, tlModule, trModule;
+    SwerveModuleIO swerveModules[];
 
     if (RobotBase.isReal()) {
-      blModule = new MixedSwerveModuleIO(Constants.SWERVE_BL_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_BL_SPARK_STEERING_CAN_ID, Constants.SWERVE_BL_CANCODER_CAN_ID);
-      brModule = new MixedSwerveModuleIO(Constants.SWERVE_BR_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_BR_SPARK_STEERING_CAN_ID, Constants.SWERVE_BR_CANCODER_CAN_ID);
-      tlModule = new MixedSwerveModuleIO(Constants.SWERVE_TL_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_TL_SPARK_STEERING_CAN_ID, Constants.SWERVE_TL_CANCODER_CAN_ID);
-      trModule = new MixedSwerveModuleIO(Constants.SWERVE_TR_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_TR_SPARK_STEERING_CAN_ID, Constants.SWERVE_TR_CANCODER_CAN_ID);
+      swerveModules = new SwerveModuleIO[] {
+        new MixedSwerveModuleIO(Constants.Swerve.Mod0.constants),
+        new MixedSwerveModuleIO(Constants.Swerve.Mod1.constants),
+        new MixedSwerveModuleIO(Constants.Swerve.Mod2.constants),
+        new MixedSwerveModuleIO(Constants.Swerve.Mod3.constants),
+      };
 
       this.imu = new NavX2();
     }
     else {
-      blModule = new SimSwerveModuleIO();
-      brModule = new SimSwerveModuleIO();
-      tlModule = new SimSwerveModuleIO();
-      trModule = new SimSwerveModuleIO();
+      /* 
+      swerveModules = new SwerveModuleIO[] {
+        new SimSwerveModuleIO(),
+        new SimSwerveModuleIO(),
+        new SimSwerveModuleIO(),
+        new SimSwerveModuleIO(),
+      };
+      */
+
+      swerveModules = new SwerveModuleIO[] {};
 
       this.imu = new SimulatedIMU();
     }
 
-    this.sweveDriveTrainSubsystem = new DriveTrainSubsystem(blModule, brModule, tlModule, trModule, this.imu);
+    this.sweveDriveTrainSubsystem = new DriveTrainSubsystem(swerveModules, this.imu);
 
     configureBindings();
   }
