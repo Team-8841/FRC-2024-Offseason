@@ -5,6 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.sensors.imu.IMU;
@@ -12,6 +15,7 @@ import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimulatedIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.MixedSwerveModuleIO;
+import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 
 public class RobotContainer {
@@ -31,26 +35,24 @@ public class RobotContainer {
         new MixedSwerveModuleIO(Constants.Swerve.Mod2.constants),
         new MixedSwerveModuleIO(Constants.Swerve.Mod3.constants),
       };
-
       this.imu = new NavX2();
     }
     else {
-      /* 
       swerveModules = new SwerveModuleIO[] {
         new SimSwerveModuleIO(),
         new SimSwerveModuleIO(),
         new SimSwerveModuleIO(),
         new SimSwerveModuleIO(),
       };
-      */
-
-      swerveModules = new SwerveModuleIO[] {};
 
       this.imu = new SimulatedIMU();
     }
 
     this.sweveDriveTrainSubsystem = new DriveTrainSubsystem(swerveModules, this.imu);
 
+    ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
+    this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
+    
     configureBindings();
   }
 

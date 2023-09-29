@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
       logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
       this.pdh = new PowerDistribution(1, ModuleType.kRev); 
-    } else {
+    } else if (Constants.simReplay) {
       // Run as fast as possible
       setUseTiming(false); 
       // Get the replay log from AdvantageScope (or prompt the user)
@@ -61,6 +61,9 @@ public class Robot extends LoggedRobot {
       logger.setReplaySource(new WPILOGReader(logPath)); 
       // Log to a file
       logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+    } else {
+      // Log to a file
+      logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
     }
 
     logger.start();

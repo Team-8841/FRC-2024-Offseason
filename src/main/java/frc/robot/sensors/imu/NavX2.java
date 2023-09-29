@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.SPI;
 /**
  * IMU Container for the NavX2 IMU.
  */
-public class NavX2 implements IMU {
+public class NavX2 extends IMU {
     private AHRS ahrs;
 
     public NavX2() {

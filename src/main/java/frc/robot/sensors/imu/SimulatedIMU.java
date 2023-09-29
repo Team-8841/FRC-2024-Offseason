@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 /**
  * Simulated IMU used during simulations.
  */
-public class SimulatedIMU implements IMU {
+public class SimulatedIMU extends IMU {
     @Override
     public Rotation3d getOrientation() {
         return new Rotation3d();

@@ -6,7 +6,7 @@ import frc.robot.sensors.imu.IMU;
 /**
  * IMU container for the BNO055.
  */
-public class BNO055 implements IMU {
+public class BNO055 extends IMU {
     private BNO055IO internalBNO055;
 
     public BNO055() {
