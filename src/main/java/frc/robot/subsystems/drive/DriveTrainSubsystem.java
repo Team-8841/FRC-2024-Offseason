@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -76,7 +77,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].actualAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].actualSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
-    }    
+    }
+    
+    public Pose2d getPose() {
+        return this.swerveOdometry.getPoseMeters();
+    }
 
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState states[] = new SwerveModuleState[4];
@@ -111,7 +116,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
             SwerveModuleIO swerveModule = this.swerveModules[i];
             swerveModule.periodic();
             swerveModule.updateInputs(this.autologgedInputs[i]);
-            logger.processInputs("SwerveModuleInputs" + i, this.autologgedInputs[i]);
+            logger.processInputs("/SwerveDrive/Module" + i, this.autologgedInputs[i]);
         }
+
+        this.swerveOdometry.update(this.imu.getYaw(), this.getModulePositions());
+        logger.recordOutput("/SwerveDrive/PoseOdometry", this.swerveOdometry.getPoseMeters());
     }
 }

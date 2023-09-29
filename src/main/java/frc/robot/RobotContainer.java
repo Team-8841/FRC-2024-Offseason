@@ -23,7 +23,7 @@ public class RobotContainer {
   private IMU imu;
 
   // Subsystems
-  private DriveTrainSubsystem sweveDriveTrainSubsystem;
+  private DriveTrainSubsystem sweveDriveTrain;
 
   public RobotContainer() {
     SwerveModuleIO swerveModules[];
@@ -48,7 +48,7 @@ public class RobotContainer {
       this.imu = new SimulatedIMU();
     }
 
-    this.sweveDriveTrainSubsystem = new DriveTrainSubsystem(swerveModules, this.imu);
+    this.sweveDriveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
 
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
