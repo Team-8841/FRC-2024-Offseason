@@ -14,7 +14,7 @@ public interface SwerveModuleIO {
         public LoggableInputs extraInfo;
         
         public double setSpeedMetersPerSecond, actualSpeedMetersPerSecond;
-        public double setSpeed, actualAngle;
+        public double setAngle, actualAngle;
         public double distance;
     }
 

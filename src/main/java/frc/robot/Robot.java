@@ -17,10 +17,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
-  private RobotContainer m_robotContainer;
+  private Command autonomousCommand;
+  private Command teleopCommand;
+  private RobotContainer robotContainer;
 
   private PowerDistribution pdh;
+
+  private void cancelCommands() {
+    if (this.autonomousCommand != null) {
+      this.autonomousCommand.cancel();
+    }
+
+    if (this.teleopCommand != null) {
+      this.teleopCommand.cancel();
+    }
+  }
 
   @Override
   public void robotInit() {
@@ -64,11 +75,14 @@ public class Robot extends LoggedRobot {
     } else {
       // Log to a file
       logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
+      // Logs to NT4
+      logger.addDataReceiver(new NT4Publisher()); 
     }
 
+    // Starts advantagekit's logger
     logger.start();
 
-    m_robotContainer = new RobotContainer();
+    robotContainer = new RobotContainer();
   }
 
   @Override
@@ -87,10 +101,11 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    this.cancelCommands();
 
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    this.autonomousCommand = robotContainer.getAutonomousCommand();
+    if (this.autonomousCommand != null) {
+      this.autonomousCommand.schedule();
     }
   }
 
@@ -102,13 +117,17 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    this.cancelCommands();
+
+    this.teleopCommand = this.robotContainer.getTeleopCommand();
+    if (this.teleopCommand != null) {
+      this.teleopCommand.schedule();
     }
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
   public void teleopExit() {}

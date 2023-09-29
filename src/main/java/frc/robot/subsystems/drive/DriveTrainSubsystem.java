@@ -74,8 +74,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         for (int i = 0; i < this.swerveModules.length; i++) {
             this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
-            this.autologgedInputs[i].actualAngle = swerveModuleStates[i].angle.getDegrees();
-            this.autologgedInputs[i].actualSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
+            this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
+            this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
     }
     
