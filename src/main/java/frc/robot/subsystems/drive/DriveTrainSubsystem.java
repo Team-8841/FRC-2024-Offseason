@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.SimManager;
 import frc.robot.sensors.imu.IMU;
 
 /**
@@ -36,7 +38,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i] = new SwerveModuleIOInputsAutoLogged();
         }
 
-        initializeShuffleBoardWidgets();
+        this.initializeShuffleBoardWidgets();
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
@@ -45,6 +47,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
         this.resetModules();
 
         this.swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, imu.getYaw(), this.getModulePositions());
+        if (RobotBase.isSimulation()) {
+            SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
+        }
     }
 
     private void initializeShuffleBoardWidgets() {
@@ -77,6 +82,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
+    }
+    
+    public ChassisSpeeds getSpeed() {
+        return Constants.Swerve.swerveKinematics.toChassisSpeeds(this.getModuleStates());
     }
     
     public Pose2d getPose() {

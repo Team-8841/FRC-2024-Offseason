@@ -88,6 +88,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    if (isSimulation()) {
+      SimManager.getInstance().periodic();
+    }
   }
 
   @Override
@@ -138,7 +142,8 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
   public void testExit() {}
