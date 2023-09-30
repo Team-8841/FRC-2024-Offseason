@@ -24,6 +24,7 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
     PIDController drivePID = new PIDController(SimConstants.Swerve.driveKP, SimConstants.Swerve.driveKI,
             SimConstants.Swerve.driveKD);
 
+    private double totalDistanceDrove = 0;
     private long lastTimestamp;
 
     public SimSwerveModuleIO() {
@@ -68,6 +69,8 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
         this.lastTimestamp = currentTimestamp;
         double dt = (currentTimestamp - lastTimestamp) / 1000000.0;
 
+        this.totalDistanceDrove += Math.abs(this.rad2WheelSpeed(this.driveMotor.getAngularVelocityRadPerSec())) * dt;
+
         this.steeringMotor.update(dt);
         this.driveMotor.update(dt);
     }
@@ -76,7 +79,7 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
     public void setAngle(SwerveModuleState desiredState) {
         this.steeringPID.setSetpoint(desiredState.angle.getDegrees());
     }
-    
+
     @Override
     public void setSpeed(SwerveModuleState desiredState) {
         this.drivePID.setSetpoint(this.wheelSpeed2Rad(desiredState.speedMetersPerSecond));
@@ -92,12 +95,8 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public SwerveModulePosition getPosition() {
-        // TODO: Implement me!
-        return new SwerveModulePosition();
-    }
-
-    @Override
-    public void updateInputs(SwerveModuleIOInputsAutoLogged inputs) {
-        // TODO: Implement me!
+        return new SwerveModulePosition(
+                this.totalDistanceDrove,
+                Rotation2d.fromRadians(this.steeringMotor.getAngularPositionRad()));
     }
 }

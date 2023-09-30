@@ -16,10 +16,9 @@ import frc.lib.util.SwerveModuleConstants;
  */
 public final class Constants {
     public static final boolean simReplay = false;
+    public static final double controllerDeadband = 0.1;
 
     /* Copied straight from BaseFalconSwerve */
-
-    public static final double stickDeadband = 0.1;
 
     public static final class Swerve {
         public static final int pigeonID = 1;

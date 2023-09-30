@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
-import frc.robot.sensors.imu.SimulatedIMU;
+import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
@@ -49,7 +49,7 @@ public class RobotContainer {
           new SimSwerveModuleIO(),
       };
 
-      this.imu = new SimulatedIMU();
+      this.imu = new SimIMU();
     }
 
     this.sweveDriveTrain = new DriveTrainSubsystem(swerveModules, this.imu);

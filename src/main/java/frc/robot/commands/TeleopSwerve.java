@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 
 public class TeleopSwerve extends CommandBase {
@@ -16,6 +17,8 @@ public class TeleopSwerve extends CommandBase {
         this.forwardSupplier = forwardSupplier;
         this.strafeSupplier = strafeSupplier;
         this.rotationSupplier = rotationSupplier;
+        //this.strafeSupplier = () -> 0;
+        //this.rotationSupplier = strafeSupplier;
         this.driveTrain = driveTrain;
 
         this.addRequirements(driveTrain);
@@ -24,10 +27,10 @@ public class TeleopSwerve extends CommandBase {
     @Override
     public void execute() {
         Translation2d driveTranslation = new Translation2d(
-            MathUtil.applyDeadband(forwardSupplier.getAsDouble(), 0.1),
-            MathUtil.applyDeadband(strafeSupplier.getAsDouble(), 0.1)
-        );
-        double rotation = this.rotationSupplier.getAsDouble();
+                MathUtil.applyDeadband(forwardSupplier.getAsDouble(), Constants.controllerDeadband),
+                MathUtil.applyDeadband(strafeSupplier.getAsDouble(), Constants.controllerDeadband));
+        double rotation = MathUtil.applyDeadband(this.rotationSupplier.getAsDouble(), Constants.controllerDeadband);
+
 
         this.driveTrain.drive(driveTranslation, rotation, false);
     }

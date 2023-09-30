@@ -78,6 +78,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
         for (int i = 0; i < this.swerveModules.length; i++) {
+            Logger.getInstance().recordOutput("/Swerve/moduleState" + i, swerveModuleStates[i]);
+
             this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;

@@ -1,6 +1,7 @@
 package frc.robot.sensors.imu;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,6 +27,7 @@ public abstract class IMU extends SubsystemBase {
     @Override
     public void periodic() {
         this.updateInputs(this.inputs);
+        Logger.getInstance().processInputs("/IMU/Inputs", this.inputs);
     }
 
     protected void updateInputs(IMUInputsAutoLogged inputs) {

@@ -68,8 +68,8 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         // measurement eventually gets to 10 by wrapping around.
         this.steeringPID.enableContinuousInput(0, 360);
 
-        // PID will stop once it's 0.5 degrees away from the setpoint.
-        this.steeringPID.setTolerance(0.5);
+        // PID will stop once it's 0.3 degrees away from the setpoint.
+        this.steeringPID.setTolerance(0.3);
     }
 
     /**
@@ -117,8 +117,8 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public void periodic() {
+        double power = this.steeringPID.calculate(this.steeringEncoder.getAbsolutePosition());
         if (!this.steeringPID.atSetpoint()) {
-            double power = this.steeringPID.calculate(this.steeringEncoder.getAbsolutePosition());
             this.steeringMotor.set(power);
         }
     }

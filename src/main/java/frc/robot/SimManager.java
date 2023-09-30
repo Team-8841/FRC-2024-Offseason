@@ -5,12 +5,12 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.sensors.imu.SimulatedIMU;
+import frc.robot.sensors.imu.SimIMU;
 
 public class SimManager {
     private static SimManager instance;
 
-    private SimulatedIMU imu;
+    private SimIMU imu;
 
     private Supplier<Pose2d> poseSupplier;
     private Supplier<ChassisSpeeds> speedSupplier;
@@ -29,7 +29,7 @@ public class SimManager {
         return SimManager.instance;
     }
 
-    public void registerIMU(SimulatedIMU imu) {
+    public void registerIMU(SimIMU imu) {
         this.imu = imu;
     }
 
@@ -37,7 +37,7 @@ public class SimManager {
         this.poseSupplier = poseSupplier;
         this.speedSupplier = speedSupplier;
 
-        this.imu.registerOrientationSuppliers(() -> this.poseSupplier.get().getRotation());
+        this.imu.registerOrientationSuppliers(speedSupplier);
     }
 
     public void periodic() {
