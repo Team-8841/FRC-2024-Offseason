@@ -19,7 +19,7 @@ public abstract class IMU extends SubsystemBase {
     
     @AutoLog
     public static class IMUInputs {
-        double pitch, yaw, roll;
+        double heading, pitch, yaw, roll;
         double qX, qY, qZ, qW;
         boolean isInitialized, isSensorPresent;
     }
@@ -31,6 +31,8 @@ public abstract class IMU extends SubsystemBase {
     }
 
     protected void updateInputs(IMUInputsAutoLogged inputs) {
+        inputs.heading = this.getHeading().getDegrees();
+
         Rotation3d orientation = this.getOrientation();
         inputs.pitch = orientation.getY();
         inputs.yaw = orientation.getZ();
@@ -47,7 +49,8 @@ public abstract class IMU extends SubsystemBase {
     }
 
     public void initializeShuffleBoardLayout(ShuffleboardLayout layout) {
-        layout.addDouble("Yaw", () -> this.getYaw().getDegrees()).withWidget(BuiltInWidgets.kGyro);
+        layout.addDouble("Heading", () -> this.getHeading().getDegrees()).withWidget(BuiltInWidgets.kGyro);
+        layout.addDouble("Yaw", () -> this.getYaw().getDegrees());
         layout.addDouble("Pitch", () -> this.getPitch().getDegrees());
         layout.addDouble("Roll", () -> this.getRoll().getDegrees());
         layout.addBoolean("Is Initialized", this::isInitialized);
@@ -61,6 +64,13 @@ public abstract class IMU extends SubsystemBase {
      *         Rotation3d.
      */
     public abstract Rotation3d getOrientation();
+
+    /**
+     * Gets the IMU's current heading angle.
+     * 
+     * @return The current heading angle as a Rotation2d.
+     */
+    public abstract Rotation2d getHeading();
 
     /**
      * Gets the IMU's current pitch angle.

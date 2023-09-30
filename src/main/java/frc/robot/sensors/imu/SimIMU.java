@@ -45,6 +45,11 @@ public class SimIMU extends IMU {
     }
 
     @Override
+    public Rotation2d getHeading() {
+        return this.getYaw();
+    }
+
+    @Override
     public boolean isSensorPresent() {
         return true;
     }

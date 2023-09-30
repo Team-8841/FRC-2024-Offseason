@@ -46,7 +46,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         Timer.delay(1);
         this.resetModules();
 
-        this.swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, imu.getYaw(), this.getModulePositions());
+        this.swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, imu.getHeading(), this.getModulePositions());
         if (RobotBase.isSimulation()) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
         }
@@ -68,7 +68,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
                                     translation.getX(), 
                                     translation.getY(), 
                                     rotation, 
-                                    this.imu.getYaw()
+                                    this.imu.getHeading()
                                 )
                                 : new ChassisSpeeds(
                                     translation.getX(), 
@@ -130,7 +130,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
             logger.processInputs("/SwerveDrive/Module" + i, this.autologgedInputs[i]);
         }
 
-        this.swerveOdometry.update(this.imu.getYaw(), this.getModulePositions());
+        this.swerveOdometry.update(this.imu.getHeading(), this.getModulePositions());
         logger.recordOutput("/SwerveDrive/PoseOdometry", this.swerveOdometry.getPoseMeters());
     }
 }
