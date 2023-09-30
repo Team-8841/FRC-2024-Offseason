@@ -31,7 +31,6 @@ public class TeleopSwerve extends CommandBase {
                 MathUtil.applyDeadband(strafeSupplier.getAsDouble(), Constants.controllerDeadband));
         double rotation = MathUtil.applyDeadband(this.rotationSupplier.getAsDouble(), Constants.controllerDeadband);
 
-
         this.driveTrain.drive(driveTranslation, rotation, false);
     }
 }
