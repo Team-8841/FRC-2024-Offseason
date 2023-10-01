@@ -69,8 +69,8 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand() {
-    return new TeleopSwerve(sweveDriveTrain, () -> -this.driveController.getLeftX(),
-        () -> -this.driveController.getLeftY(),
-        () -> -this.driveController.getRightY());
+    return new TeleopSwerve(sweveDriveTrain, () -> -this.driveController.getLeftY(),
+        () -> -this.driveController.getLeftX(),
+        () -> -this.driveController.getRightX());
   }
 }

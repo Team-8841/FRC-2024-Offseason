@@ -17,8 +17,8 @@ public class TeleopSwerve extends CommandBase {
         this.forwardSupplier = forwardSupplier;
         this.strafeSupplier = strafeSupplier;
         this.rotationSupplier = rotationSupplier;
-        //this.strafeSupplier = () -> 0;
-        //this.rotationSupplier = strafeSupplier;
+        // this.strafeSupplier = () -> 0;
+        // this.rotationSupplier = strafeSupplier;
         this.driveTrain = driveTrain;
 
         this.addRequirements(driveTrain);
@@ -27,9 +27,12 @@ public class TeleopSwerve extends CommandBase {
     @Override
     public void execute() {
         Translation2d driveTranslation = new Translation2d(
-                MathUtil.applyDeadband(forwardSupplier.getAsDouble(), Constants.controllerDeadband),
-                MathUtil.applyDeadband(strafeSupplier.getAsDouble(), Constants.controllerDeadband));
-        double rotation = MathUtil.applyDeadband(this.rotationSupplier.getAsDouble(), Constants.controllerDeadband);
+                MathUtil.applyDeadband(forwardSupplier.getAsDouble(), Constants.controllerDeadband)
+                        * Constants.Swerve.maxSpeed,
+                MathUtil.applyDeadband(strafeSupplier.getAsDouble(), Constants.controllerDeadband)
+                        * Constants.Swerve.maxSpeed);
+        double rotation = MathUtil.applyDeadband(this.rotationSupplier.getAsDouble(), Constants.controllerDeadband)
+                * Constants.Swerve.maxAngularVelocity;
 
         this.driveTrain.drive(driveTranslation, rotation, false);
     }
