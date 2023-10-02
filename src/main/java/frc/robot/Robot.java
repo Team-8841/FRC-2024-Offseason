@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.pathing.PlannedPath;
 
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
@@ -83,6 +84,8 @@ public class Robot extends LoggedRobot {
     logger.start();
 
     robotContainer = new RobotContainer();
+
+    PlannedPath path = PlannedPath.fetchPath("Test Path.wpilib.json");
   }
 
   @Override
