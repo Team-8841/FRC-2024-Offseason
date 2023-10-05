@@ -8,19 +8,23 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 
 /**
- * Drives to a position in a straight line.
+ * Drives to a position in a straight line at a certain velocity and containues
+ * at that velocity once it hits the desired waypoint. This is useful for
+ * driving to the beginning of paths.
  */
 public class DriveToPosLinear extends CommandBase {
-    private double endingSpeed, tolerance;
+    private double startingSpeed, endingSpeed, tolerance;
     private long startTime;
     private Translation2d endingTrans;
 
     private DriveTrainSubsystem driveTrain;
 
-    private static double lerp(double t, double start, double end) {
-        return (1 - t) * start + t * end;
-    }
-
+    /**
+     * @param endingSpeed The speed we want to drive to the ending translation with and to continue at.
+     * @param endingTrans The field relative translation to drive too.
+     * @param tolerance   How close do we want to be from the ending translation?
+     * @param driveTrain  The drivetrain subsystem.
+     */
     public DriveToPosLinear(double endingSpeed, Translation2d endingTrans, double tolerance,
             DriveTrainSubsystem driveTrain) {
         this.endingSpeed = endingSpeed;
@@ -29,9 +33,17 @@ public class DriveToPosLinear extends CommandBase {
 
         this.driveTrain = driveTrain;
 
+        this.startingSpeed = driveTrain.getLinearSpeed();
+
         this.addRequirements(driveTrain);
     }
 
+    /**
+     * Gets the translation representing the difference in position from the robot
+     * and the desired position.
+     * 
+     * @return Translation2d containing the position deltas.
+     */
     private Translation2d getDeltaTrans() {
         Translation2d currentTrans = this.driveTrain.getPose().getTranslation();
         return new Translation2d(
@@ -47,9 +59,9 @@ public class DriveToPosLinear extends CommandBase {
             this.startTime = logger.getTimestamp();
         }
 
+        // Interpolate the speed so that we only accelerate at Constants.maxAcceleration.
         double t = (logger.getTimestamp() - this.startTime) / 1000000.0;
-        double calculatedSpeed = lerp(t / Constants.accelerationTime, tolerance, endingSpeed);
-        calculatedSpeed = Math.max(calculatedSpeed, this.endingSpeed);
+        double calculatedSpeed = Math.max(this.startingSpeed + t * Constants.maxAcceleration, this.endingSpeed);
 
         Translation2d deltaTrans = this.getDeltaTrans();
         Translation2d directionTrans = deltaTrans.div(deltaTrans.getNorm());
