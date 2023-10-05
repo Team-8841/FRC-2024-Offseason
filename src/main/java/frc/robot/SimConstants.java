@@ -8,8 +8,8 @@ public class SimConstants {
         public static final double steeringKI = 0;
         public static final double steeringKD = 0.01;
 
-        public static final double driveKV = 0.115;
-        public static final double driveKP = 0.02;
+        public static final double driveKV = 0.12;
+        public static final double driveKP = 0.03;
         public static final double driveKI = 0;
         public static final double driveKD = 0;
 

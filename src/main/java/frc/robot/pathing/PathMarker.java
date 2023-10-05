@@ -1,7 +1,7 @@
 package frc.robot.pathing;
 
 public class PathMarker implements Positioned {
-    Coordinate location;
+    private Coordinate location;
 
     public Coordinate getPosition() {
         return this.location;

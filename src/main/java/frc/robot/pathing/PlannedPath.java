@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.swing.text.Position;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -103,6 +101,10 @@ public class PlannedPath {
         }
     }
 
+    public List<PathInstant> getInstants() {
+        return this.instants;
+    }
+
     public List<PathWaypoint> getPathWaypoints() {
         return this.waypoints;
     }
@@ -111,35 +113,4 @@ public class PlannedPath {
         return this.markers;
     }
 
-    public long getInstantFromPosition(double t, Coordinate position) {
-        for (int i = 0; i < this.instants.size(); i++) {
-            PathInstant instant = this.instants.get(i);
-
-            if (instant.time < t) {
-                continue; // skip
-            }
-
-            if (new Coordinate(instant.pose).distanceSquared(position) <= Constants.pathingEpsilon) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    // TODO: Maybe replace this with a binary search?
-    public long getInstantAtT(double t) {
-        if (t >= 1) {
-            return this.instants.size() - 1;
-        }
-
-        for (int i = 1; i < this.instants.size(); i++) {
-            if (this.instants.get(i).time > t) {
-                return i - 1;
-            }
-        }
-
-        // Shouldn't ever happen
-        return this.instants.size() - 1;
-    }
 }

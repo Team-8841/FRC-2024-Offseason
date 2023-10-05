@@ -85,7 +85,7 @@ public class Robot extends LoggedRobot {
 
     robotContainer = new RobotContainer();
 
-    PlannedPath path = PlannedPath.fetchPath("Test Path.wpilib.json");
+    PlannedPath path = PlannedPath.fetchPath("Test Path");
   }
 
   @Override
@@ -117,7 +117,8 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
   public void autonomousExit() {}
