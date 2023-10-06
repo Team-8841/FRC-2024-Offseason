@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import frc.robot.Constants;
 
 @JsonIgnoreProperties({ "velocity", "acceleration", "curvature", "holonomicRotation", "angularVelocity",
         "holonomicAngularVelocity" })
-public class PathInstant implements Positioned {
+public class PathInstant {
     public double time;
     public Pose2d pose;
 
@@ -37,11 +38,7 @@ public class PathInstant implements Positioned {
         this.pose = new Pose2d(pose.translation.x, pose.translation.y, Rotation2d.fromRadians(pose.rotation.radians));
     }
 
-    public Coordinate getPosition() {
-        return new Coordinate(this.pose);
-    }
-
-    public static int getInstantFromPosition(List<PathInstant> instants, double t, Coordinate position) {
+    public static int getInstantFromPosition(List<PathInstant> instants, double t, Translation2d position) {
         for (int i = 0; i < instants.size(); i++) {
             PathInstant instant = instants.get(i);
 
@@ -49,7 +46,7 @@ public class PathInstant implements Positioned {
                 continue; // skip
             }
 
-            if (new Coordinate(instant.pose).distanceSquared(position) <= Constants.pathingEpsilon * Constants.pathingEpsilon) {
+            if (instant.pose.getTranslation().getDistance(position) <= Constants.pathingEpsilon) {
                 return i;
             }
         }

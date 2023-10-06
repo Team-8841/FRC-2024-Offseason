@@ -1,20 +1,18 @@
 package frc.robot.pathing;
 
-public class PathWaypoint implements Positioned {
-    private Coordinate anchorPoint, prevControl, nextControl;
+import edu.wpi.first.math.geometry.Translation2d;
 
-    public Coordinate getAnchor() {
+public class PathWaypoint {
+    private Translation2d anchorPoint, prevControl, nextControl;
+
+    public Translation2d getAnchor() {
         return this.anchorPoint;
     }
 
-    public Coordinate getPrevControl() {
+    public Translation2d getPrevControl() {
         return this.prevControl;
     }
-    public Coordinate getNextControl() {
+    public Translation2d getNextControl() {
         return this.nextControl;
-    }
-
-    public Coordinate getPosition() {
-        return this.anchorPoint;
     }
 }

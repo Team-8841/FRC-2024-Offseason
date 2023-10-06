@@ -1,9 +1,11 @@
 package frc.robot.pathing;
 
-public class PathMarker implements Positioned {
-    private Coordinate location;
+import edu.wpi.first.math.geometry.Translation2d;
 
-    public Coordinate getPosition() {
+public class PathMarker {
+    private Translation2d location;
+
+    public Translation2d getLocation() {
         return this.location;
     }
 }
