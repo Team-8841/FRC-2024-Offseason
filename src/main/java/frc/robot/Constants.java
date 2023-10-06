@@ -21,6 +21,7 @@ public final class Constants {
     public static final double trapezoidIntegralSteps = 1000.0;
 
     public static final double pathingEpsilon = 0.005;
+    public static final int pathInstantCount = 1000;
     // The minimum initial distance away from the starting position of a path to
     // begin a path.
     public static final double minimumInitialAnchorDistance = 0.2;
@@ -28,7 +29,7 @@ public final class Constants {
     public static final double maxAcceleration = 3;
     public static final double accelerationTime = 0.1;
     
-    public static final double positionKS = 0.2;
+    public static final double positionKS = 0.3;
     public static final double positionKP = 0.5;
     public static final double positionKI = 0;
     public static final double positionKD = 0;

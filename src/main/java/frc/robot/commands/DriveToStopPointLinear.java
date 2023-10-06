@@ -3,6 +3,7 @@ package frc.robot.commands;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -21,6 +22,7 @@ public class DriveToStopPointLinear extends CommandBase {
 
     private PIDController xPID = new PIDController(Constants.positionKP, Constants.positionKI, Constants.positionKD);
     private PIDController yPID = new PIDController(Constants.positionKP, Constants.positionKI, Constants.positionKD);
+    private SlewRateLimiter speedLimiter;
 
     /**
      * @param endingTrans The field relative translation to drive too.
@@ -38,6 +40,9 @@ public class DriveToStopPointLinear extends CommandBase {
         this.driveTrain = driveTrain;
 
         this.addRequirements(driveTrain);
+
+        this.speedLimiter = new SlewRateLimiter(Constants.maxAcceleration, -Constants.maxAcceleration,
+                driveTrain.getLinearSpeed());
     }
 
     /**
@@ -74,13 +79,11 @@ public class DriveToStopPointLinear extends CommandBase {
         // large(-ish) values).
         if (this.feedforward) {
             Translation2d feedforwardVelocity = deltaTrans.times(Constants.positionKS / deltaTrans.getNorm());
-
-            velocity = new Translation2d(
-                    velocity.getX() + feedforwardVelocity.getX(),
-                    velocity.getY() + feedforwardVelocity.getY());
+            velocity = velocity.plus(feedforwardVelocity);
         }
 
-        Logger.getInstance().recordOutput("/DesiredSpeed", velocity.getNorm());
+        // Desaturates the desired velocity with the value from the slew rate limiter.
+        velocity = velocity.times(this.speedLimiter.calculate(velocity.getNorm()) / velocity.getNorm());
 
         this.driveTrain.drive(velocity, 0, true);
     }

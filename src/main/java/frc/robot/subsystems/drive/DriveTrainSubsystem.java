@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import org.ejml.dense.block.VectorOps_DDRB;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -66,16 +65,16 @@ public class DriveTrainSubsystem extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
-        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+        ChassisSpeeds velocity = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                translation.getX(),
+                translation.getY(),
+                rotation,
+                this.imu.getHeading())
+                : new ChassisSpeeds(
                         translation.getX(),
                         translation.getY(),
-                        rotation,
-                        this.imu.getHeading())
-                        : new ChassisSpeeds(
-                                translation.getX(),
-                                translation.getY(),
-                                rotation));
+                        rotation);
+        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(velocity);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
         for (int i = 0; i < this.swerveModules.length; i++) {
@@ -83,6 +82,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
             this.autologgedInputs[i].setSpeedMetersPerSecond = swerveModuleStates[i].speedMetersPerSecond;
         }
+
+        Logger logger = Logger.getInstance();
+
+        logger.recordOutput("/SwerveDrive/DesiredVelocity/vxMPS", velocity.vxMetersPerSecond);
+        logger.recordOutput("/SwerveDrive/DesiredVelocity/vyMPS", velocity.vyMetersPerSecond);
+        logger.recordOutput("/SwerveDrive/DesiredVelocity/omegaRadPS", velocity.omegaRadiansPerSecond);
+        logger.recordOutput("/SwerveDrive/DesiredLinearSpeed", translation.getNorm());
     }
 
     public ChassisSpeeds getVelocity() {
@@ -139,7 +145,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
         this.swerveOdometry.update(this.imu.getHeading(), this.getModulePositions());
         logger.recordOutput("/SwerveDrive/PoseOdometry", this.swerveOdometry.getPoseMeters());
-        
+
         ChassisSpeeds velocity = this.getVelocity();
         logger.recordOutput("/SwerveDrive/Velocity/vxMPS", velocity.vxMetersPerSecond);
         logger.recordOutput("/SwerveDrive/Velocity/vyMPS", velocity.vyMetersPerSecond);

@@ -21,7 +21,7 @@ public class Conversions {
     }
 
     /**
-     * @param counts Falcon Position Counts
+     * @param positionCounts Falcon Position Counts
      * @param gearRatio Gear Ratio between Falcon and Mechanism
      * @return Degrees of Rotation of Mechanism
      */

@@ -29,7 +29,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
     // I would've liked to use closed loop control on the neo but the cancoder can't
     // be attached to the sparkmax :/
     PIDController steeringPID = new PIDController(Constants.Swerve.angleKP, Constants.Swerve.angleKI,
-                Constants.Swerve.angleKD);
+            Constants.Swerve.angleKD);
 
     // Added to the drive motor's closed loop PID output to maintain velocity so
     // that the PID doesn't constantly have to readjust for error
@@ -45,6 +45,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
      * @param steeringMotor   The SparkMax controller controlling the steering
      *                        motor.
      * @param steeringEncoder The CTRE CANCoder attached to the steering motor.
+     * @param constants       The swerve constants.
      */
     public MixedSwerveModuleIO(TalonFX driveMotor, CANSparkMax steeringMotor, CANCoder steeringEncoder,
             SwerveModuleConstants constants) {
@@ -73,13 +74,9 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
     }
 
     /**
-     * Creates a new container from each of the component's CAN ID's.
+     * Creates a new container from only the swerve constants.
      * 
-     * @param driveMotorCANID      The CAN ID of the TalonFX controlled drive motor.
-     * @param steeringMotorCANID   The CAN ID of the SparkMax controlled steering
-     *                             motor.
-     * @param steeringEncoderCANID The CAN ID of the CTRE CANConder steering
-     *                             encoder.
+     * @param constants The swerve constants.
      */
     public MixedSwerveModuleIO(SwerveModuleConstants constants) {
         this(
