@@ -26,18 +26,11 @@ public final class Constants {
     // begin a path.
     public static final double minimumInitialAnchorDistance = 0.2;
     
-    public static final double maxAcceleration = 3;
-    public static final double accelerationTime = 0.1;
-    
-    public static final double positionKS = 0.3;
-    public static final double positionKP = 0.5;
-    public static final double positionKI = 0;
-    public static final double positionKD = 0;
-    
     /* Copied straight from BaseFalconSwerve */
 
     public static final class Swerve {
-        public static final int pigeonID = 1;
+        public static final double approxDriveInputDelay = 0.15;
+
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
         public static final COTSFalconSwerveConstants chosenModule = // TODO: This must be tuned to specific robot
