@@ -10,9 +10,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.DriveToStopPointLinear;
+import frc.robot.commands.DriveToPosLinear;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
@@ -68,7 +67,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     //return Commands.print("No autonomous command configured");
-    return new DriveToStopPointLinear(new Translation2d(5, 4), true, 0.05, this.sweveDriveTrain);
+    return new DriveToPosLinear(0, new Translation2d(0.5, 0.25), 0.1, this.sweveDriveTrain);
   }
 
   public Command getTeleopCommand() {
