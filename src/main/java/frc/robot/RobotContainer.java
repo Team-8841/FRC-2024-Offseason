@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.DriveToPosLinear;
+import frc.robot.commands.DriveLinear;
+import frc.robot.commands.DrivePath;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.pathing.PlannedPath;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
@@ -67,7 +69,8 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     //return Commands.print("No autonomous command configured");
-    return new DriveToPosLinear(0, new Translation2d(0.5, 0.25), 0.1, this.sweveDriveTrain);
+    PlannedPath path = PlannedPath.fetchPath("Test Path");
+    return new DrivePath(path, this.sweveDriveTrain);
   }
 
   public Command getTeleopCommand() {

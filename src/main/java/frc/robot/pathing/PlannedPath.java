@@ -15,43 +15,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.lib.math.CubicBezier;
 
-class PathAttributes {
-    public List<PathWaypoint> waypoints;
-    public List<PathMarker> markers;
-
-    @JsonCreator
-    public PathAttributes(@JsonProperty("waypoints") List<PathWaypoint> waypoints,
-            @JsonProperty("markers") List<PathMarker> markers) {
-        this.waypoints = waypoints;
-        this.markers = markers;
-    }
-}
-
-@JsonIgnoreProperties({"isReversal", "velOverride", "isLocked", "isStopPoint", "stopEvent"})
-class PathWaypoint {
-    Coordinate anchorPoint, prevControl, nextControl;
-    CubicBezier curve;
-    double holonomicAngle;
-
-    @JsonCreator
-    PathWaypoint(@JsonProperty("anchorPoint") Coordinate anchorPoint,
-            @JsonProperty("prevControl") Coordinate prevControl, @JsonProperty("nextControl") Coordinate nextControl,
-            @JsonProperty("holonomicAngle") double holonomicAngle) {
-        this.anchorPoint = anchorPoint;
-        this.prevControl = prevControl;
-        this.nextControl = nextControl;
-        this.holonomicAngle = holonomicAngle;
-    }
-
-    public CubicBezier getCurve() {
-        return this.curve;
-    }
-
-    public double getHolonomicAngle() {
-        return holonomicAngle;
-    }
-}
-
 class Coordinate {
     public double x, y;
 
@@ -71,8 +34,57 @@ class Coordinate {
 }
 
 public class PlannedPath {
-    protected List<PathWaypoint> waypoints;
-    protected List<PathMarker> markers;
+    protected List<Waypoint> waypoints;
+    protected List<Marker> markers;
+
+    private static class Attributes {
+        public List<Waypoint> waypoints;
+        public List<Marker> markers;
+
+        @JsonCreator
+        public Attributes(@JsonProperty("waypoints") List<Waypoint> waypoints,
+                @JsonProperty("markers") List<Marker> markers) {
+            this.waypoints = waypoints;
+            this.markers = markers;
+        }
+    }
+
+    public static class Marker {
+        private Translation2d location;
+
+        public Translation2d getLocation() {
+            return this.location;
+        }
+    }
+
+    @JsonIgnoreProperties({"isReversal", "velOverride", "isLocked", "isStopPoint", "stopEvent"})
+    public static class Waypoint {
+        Coordinate anchorPoint, prevControl, nextControl;
+        CubicBezier curve;
+        double holonomicAngle;
+
+        @JsonCreator
+        Waypoint(@JsonProperty("anchorPoint") Coordinate anchorPoint,
+                @JsonProperty("prevControl") Coordinate prevControl, @JsonProperty("nextControl") Coordinate nextControl,
+                @JsonProperty("holonomicAngle") double holonomicAngle) {
+            this.anchorPoint = anchorPoint;
+            this.prevControl = prevControl;
+            this.nextControl = nextControl;
+            this.holonomicAngle = holonomicAngle;
+        }
+
+        public CubicBezier getCurve() {
+            return this.curve;
+        }
+
+        public double getHolonomicAngle() {
+            return holonomicAngle;
+        }
+
+        public Translation2d getLocation() {
+            return this.anchorPoint.getTranslation();
+        }
+    }
 
     public PlannedPath(String pathName, File attributes) throws IOException {
         String attributeFilePath = attributes.getAbsolutePath();
@@ -82,12 +94,12 @@ public class PlannedPath {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        PathAttributes parsedAttributes = mapper.readValue(attributes, PathAttributes.class);
+        Attributes parsedAttributes = mapper.readValue(attributes, Attributes.class);
         this.markers = parsedAttributes.markers;
         this.waypoints = parsedAttributes.waypoints;
 
         List<Translation2d> splinePoints = new ArrayList<>();
-        for (PathWaypoint waypoint : parsedAttributes.waypoints) {
+        for (Waypoint waypoint : parsedAttributes.waypoints) {
             if (waypoint.prevControl != null) {
                 splinePoints.add(waypoint.prevControl.getTranslation());
             }
@@ -97,7 +109,7 @@ public class PlannedPath {
             }
         }
 
-        for (int j = 0, i = 3; i < splinePoints.size(); j++, i += 3) {
+        for (int j = 1, i = 3; i < splinePoints.size(); j++, i += 3) {
             Translation2d curvePoints[] = {
                     splinePoints.get(i - 3),
                     splinePoints.get(i - 2),
@@ -124,11 +136,11 @@ public class PlannedPath {
         }
     }
 
-    public List<PathMarker> getPathMarkers() {
+    public List<Marker> getPathMarkers() {
         return this.markers;
     }
 
-    public List<PathWaypoint> getPathWaypoints() {
+    public List<Waypoint> getPathWaypoints() {
         return this.waypoints;
     }
 }

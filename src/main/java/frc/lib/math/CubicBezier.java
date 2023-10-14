@@ -1,15 +1,22 @@
 package frc.lib.math;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.robot.Constants;
 
 /**
  * Cubic bezier curve
- * @see <a href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Cubic_B%C3%A9zier_curves">Cubic Bezier Curve Wikipedia</a>
- * @see <a href="https://www.youtube.com/watch?v=aVwxzDHniEw">Freya's video on Bezier curves</a>
- * @see <a href="https://www.youtube.com/watch?v=jvPPXbo87ds">Freya's video on splines</a>
+ * 
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Cubic_B%C3%A9zier_curves">Cubic
+ *      Bezier Curve Wikipedia</a>
+ * @see <a href="https://www.youtube.com/watch?v=aVwxzDHniEw">Freya's video on
+ *      Bezier curves</a>
+ * @see <a href="https://www.youtube.com/watch?v=jvPPXbo87ds">Freya's video on
+ *      splines</a>
  */
 public class CubicBezier {
     private Translation2d points[];
+    private LUT calculatedLut;
 
     public static class LUT {
         double lutVals[][];
@@ -26,14 +33,13 @@ public class CubicBezier {
             this.lutVals = lutVals;
         }
 
-        public static double invLerp(double initial, double end, double interpolated) {
-            return (interpolated - initial) / (end - initial);
-        }
-
-        public static double lerp(double initial, double end, double t) {
-            return (1 - t) * initial + t * end;
-        }
-
+        /**
+         * Computes the approximate distance (arclength) from t = 0 to the provided t
+         * value on the curve.
+         * 
+         * @param t The t value to find the distance of.
+         * @return The distance.
+         */
         public double getDistAtT(double t) {
             if (t <= 0) {
                 return this.lutVals[0][0];
@@ -49,11 +55,18 @@ public class CubicBezier {
             double lowerArc = this.lutVals[lowerIndex][0];
             double upperArc = this.lutVals[upperIndex][1];
 
-            double u = invLerp(lowerIndex, upperIndex, t * (this.lutVals.length - 1));
+            double u = MiscMath.invLerp(lowerIndex, upperIndex, t * (this.lutVals.length - 1));
 
-            return lerp(lowerArc, upperArc, u);
+            return MiscMath.lerp(lowerArc, upperArc, u);
         }
 
+        /**
+         * Computes the a t value that is approximately the provided distance
+         * (arclength) away from t = 0.
+         * 
+         * @param arclength The arclength used to compute the approximate t value.
+         * @return The approximate t value.
+         */
         // TODO: Maybe replace this with a binary search?
         public double getTAtDist(double arclength) {
             for (int i = 1; i < this.lutVals.length; i++) {
@@ -65,9 +78,9 @@ public class CubicBezier {
                     double s1 = this.lutVals[i - 1][0];
                     double s2 = this.lutVals[i][0];
 
-                    double u = invLerp(s1, s2, arclength);
+                    double u = MiscMath.invLerp(s1, s2, arclength);
 
-                    return lerp(t1, t2, u);
+                    return MiscMath.lerp(t1, t2, u);
                 }
             }
 
@@ -81,6 +94,12 @@ public class CubicBezier {
             return dx * dx + dy * dy;
         }
 
+        /**
+         * Get's the t value which is approximately closest to the provided position.
+         * 
+         * @param pos The position used to approximate the closest t value.
+         * @return The approximate closest t value.
+         */
         public double getClosestT(Translation2d pos) {
             int closestInd = 0;
             double closestDist = this.distSqFromIndex(0, pos);
@@ -93,7 +112,7 @@ public class CubicBezier {
                     closestDist = dist;
                 }
             }
-            
+
             return (double) closestInd / (this.lutVals.length - 1);
         }
     }
@@ -106,15 +125,50 @@ public class CubicBezier {
             throw new IllegalArgumentException("Illegal amount of points.");
         }
 
+        for (int i = 0; i < points.length; i++) {
+            System.out.format("control point %d: (%f, %f)\n", i, points[i].getX(), points[i].getY());
+        }
+        System.out.println();
+
         this.points = points;
     }
 
+    /**
+     * Calculates a lookup table if one isn't already cached, then returns it.
+     * 
+     * @return The lookup table for the bezier curve.
+     */
     public LUT getLUT() {
-        return null;
+        if (this.calculatedLut != null) {
+            return this.calculatedLut;
+        }
+
+        double lutVals[][] = new double[Constants.bezierLookupTableEntries][3];
+
+        lutVals[0] = new double[] { 0, this.points[0].getX(), this.points[0].getY() };
+
+        int i = 1;
+        double dt = 1.0 / (Constants.bezierLookupTableEntries - 1);
+        for (double t = dt; i < Constants.bezierLookupTableEntries; t += dt, i++) {
+            Translation2d calculated = this.get(t);
+
+            lutVals[i][1] = calculated.getX();
+            lutVals[i][2] = calculated.getY();
+
+            double dx = lutVals[i][1] - lutVals[i - 1][1];
+            double dy = lutVals[i][2] - lutVals[i - 1][2];
+
+            lutVals[i][0] = lutVals[i - 1][0] + Math.sqrt(dx * dx + dy * dy);
+        }
+
+        this.calculatedLut = new LUT(lutVals);
+
+        return this.calculatedLut;
     }
 
     /**
      * Calculates the point of the curve at paramter t.
+     * 
      * @param t
      * @return The point of the curve at parameter t.
      */
@@ -129,6 +183,7 @@ public class CubicBezier {
 
     /**
      * Calculates the derivative of the curve at parameter t.
+     * 
      * @param t
      * @return The second derivative at parameter t.
      */
@@ -142,6 +197,7 @@ public class CubicBezier {
 
     /**
      * Calculates the second derivative of the curve at parameter t.
+     * 
      * @param t
      * @return The second derivative at parameter t.
      */
@@ -157,12 +213,14 @@ public class CubicBezier {
 
     /**
      * Calculates the curvature at parameter t.
-     * @see <a href="https://en.wikipedia.org/wiki/Curvature">Curvature Wikipedia</a>
+     * 
+     * @see <a href="https://en.wikipedia.org/wiki/Curvature">Curvature
+     *      Wikipedia</a>
      * @param t
      * @return The curvature at parameter t
      */
     public double getCurvature(double t) {
-        // third equation on https://en.wikipedia.org/wiki/Curvature#General_expressions 
+        // third equation on https://en.wikipedia.org/wiki/Curvature#General_expressions
         Translation2d derivative = this.getDerivative(t);
         Translation2d secondDerivative = this.getSecondDerivative(t);
 

@@ -17,14 +17,8 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final boolean simReplay = false;
     public static final double controllerDeadband = 0.1;
-
-    public static final double trapezoidIntegralSteps = 1000.0;
-
-    public static final double pathingEpsilon = 0.005;
-    public static final int pathInstantCount = 1000;
-    // The minimum initial distance away from the starting position of a path to
-    // begin a path.
-    public static final double minimumInitialAnchorDistance = 0.2;
+    
+    public static final int bezierLookupTableEntries = 1000;
     
     /* Copied straight from BaseFalconSwerve */
 
@@ -174,5 +168,9 @@ public final class Constants {
         /* Constraint for the motion profilied robot angle controller */
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
                 MaxAngularSpeedRadiansPerSecond, MaxAngularSpeedRadiansPerSecondSquared);
+
+        public static final double minimumInitialPathDistance = 0.2;
+        public static final double pathingLookaheadDistance = 1;
+        public static final double pathingTolerance = 0.1;
     }
 }

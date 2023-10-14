@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -11,14 +13,14 @@ import frc.robot.subsystems.drive.DriveTrainSubsystem;
  * at that velocity once it hits the desired waypoint. This is useful for
  * driving to the beginning of paths.
  */
-public class DriveToPosLinear extends CommandBase {
+public class DriveLinear extends CommandBase {
+    protected DriveTrainSubsystem driveTrain;
+
     private double tolerance;
     private Translation2d endingTrans;
 
     private TrapezoidProfile.State goalState;
     private TrapezoidProfile.Constraints constraints;
-
-    private DriveTrainSubsystem driveTrain;
 
     /**
      * @param endingSpeed The speed we want to drive to the ending translation with
@@ -27,7 +29,7 @@ public class DriveToPosLinear extends CommandBase {
      * @param tolerance   How close do we want to be from the ending translation?
      * @param driveTrain  The drivetrain subsystem.
      */
-    public DriveToPosLinear(double endingSpeed, Translation2d endingTrans, double tolerance,
+    public DriveLinear(double endingSpeed, Translation2d endingTrans, double tolerance,
             DriveTrainSubsystem driveTrain) {
         this.addRequirements(driveTrain);
 
@@ -49,9 +51,7 @@ public class DriveToPosLinear extends CommandBase {
      */
     private Translation2d getDeltaTrans() {
         Translation2d currentTrans = this.driveTrain.getPose().getTranslation();
-        return new Translation2d(
-                this.endingTrans.getX() - currentTrans.getX(),
-                this.endingTrans.getY() - currentTrans.getY());
+        return this.endingTrans.minus(currentTrans);
     }
 
     public void updateProfile() {

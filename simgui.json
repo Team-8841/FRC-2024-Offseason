@@ -41,5 +41,12 @@
       "/Shuffleboard/Sim/Drive PID": "PIDController",
       "/Shuffleboard/Sim/Steering PID": "PIDController"
     }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "AdvantageKit": {
+        "open": true
+      }
+    }
   }
 }

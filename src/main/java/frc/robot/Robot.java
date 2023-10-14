@@ -84,8 +84,6 @@ public class Robot extends LoggedRobot {
     logger.start();
 
     robotContainer = new RobotContainer();
-
-    PlannedPath path = PlannedPath.fetchPath("Test Path");
   }
 
   @Override
