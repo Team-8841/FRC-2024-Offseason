@@ -16,7 +16,7 @@ import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
-import frc.robot.subsystems.drive.Falcon500SwerveModuleIO;
+import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 
@@ -35,10 +35,10 @@ public class RobotContainer {
 
     if (RobotBase.isReal()) {
       swerveModules = new SwerveModuleIO[] {
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod0.constants),
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod1.constants),
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod2.constants),
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod3.constants),
+          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod0.constants),
+          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod1.constants),
+          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod2.constants),
+          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod3.constants),
       };
       this.imu = new NavX2();
     } else {

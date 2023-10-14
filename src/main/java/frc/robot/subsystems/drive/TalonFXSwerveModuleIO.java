@@ -17,15 +17,15 @@ import frc.lib.util.SwerveModuleConstants;
 import frc.robot.CTREConfigs;
 import frc.robot.Constants;
 
-public class Falcon500SwerveModuleIO implements SwerveModuleIO {
+public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     private TalonFX driveMotor, steeringMotor;
 
     private Rotation2d lastAngle;
 
     // Added to the drive motor's closed loop PID output to maintain velocity so
     // that the PID doesn't constantly have to readjust for error
-    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(Constants.Swerve.driveKS,
-            Constants.Swerve.driveKV, Constants.Swerve.driveKA);
+    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(Constants.Swerve.PureTalonFX.driveKS,
+            Constants.Swerve.PureTalonFX.driveKV, Constants.Swerve.PureTalonFX.driveKA);
 
     SwerveModuleConstants constants;
 
@@ -37,7 +37,7 @@ public class Falcon500SwerveModuleIO implements SwerveModuleIO {
      *                        motor.
      * @param steeringEncoder The CTRE CANCoder attached to the steering motor.
      */
-    public Falcon500SwerveModuleIO(TalonFX driveMotor, TalonFX steeringMotor, SwerveModuleConstants constants) {
+    public TalonFXSwerveModuleIO(TalonFX driveMotor, TalonFX steeringMotor, SwerveModuleConstants constants) {
         this.driveMotor = driveMotor;
         this.steeringMotor = steeringMotor;
         this.constants = constants;
@@ -56,7 +56,7 @@ public class Falcon500SwerveModuleIO implements SwerveModuleIO {
      * @param steeringEncoderCANID The CAN ID of the CTRE CANConder steering
      *                             encoder.
      */
-    public Falcon500SwerveModuleIO(SwerveModuleConstants constants) {
+    public TalonFXSwerveModuleIO(SwerveModuleConstants constants) {
         this(
                 new TalonFX(constants.driveMotorID),
                 new TalonFX(constants.angleMotorID),
@@ -67,7 +67,7 @@ public class Falcon500SwerveModuleIO implements SwerveModuleIO {
         this.driveMotor.configFactoryDefault();
         this.driveMotor.configAllSettings(CTREConfigs.swerveDriveFXConfig);
         this.driveMotor.setInverted(Constants.Swerve.driveMotorInvert);
-        this.driveMotor.setNeutralMode(Constants.Swerve.driveNeutralMode);
+        this.driveMotor.setNeutralMode(Constants.Swerve.PureTalonFX.driveNeutralMode);
         this.driveMotor.setSelectedSensorPosition(0);
     }
 
@@ -75,7 +75,7 @@ public class Falcon500SwerveModuleIO implements SwerveModuleIO {
         this.steeringMotor.configFactoryDefault();
         this.steeringMotor.configAllSettings(CTREConfigs.swerveAngleFXConfig);
         this.steeringMotor.setInverted(Constants.Swerve.driveMotorInvert);
-        this.steeringMotor.setNeutralMode(Constants.Swerve.driveNeutralMode);
+        this.steeringMotor.setNeutralMode(Constants.Swerve.PureTalonFX.angleNeutralMode);
         this.steeringMotor.configRemoteFeedbackFilter(this.constants.cancoderID, RemoteSensorSource.CANCoder, 0);
         this.steeringMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 1000);
         this.steeringMotor.setSelectedSensorPosition(0);

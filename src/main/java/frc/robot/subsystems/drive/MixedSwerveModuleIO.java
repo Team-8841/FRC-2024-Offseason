@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -28,13 +27,13 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
     // I would've liked to use closed loop control on the neo but the cancoder can't
     // be attached to the sparkmax :/
-    PIDController steeringPID = new PIDController(Constants.Swerve.angleKP, Constants.Swerve.angleKI,
-                Constants.Swerve.angleKD);
+    PIDController steeringPID = new PIDController(Constants.Swerve.Mixed.angleKP, Constants.Swerve.Mixed.angleKI,
+                Constants.Swerve.Mixed.angleKD);
 
     // Added to the drive motor's closed loop PID output to maintain velocity so
     // that the PID doesn't constantly have to readjust for error
-    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(Constants.Swerve.driveKS,
-            Constants.Swerve.driveKV, Constants.Swerve.driveKA);
+    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(Constants.Swerve.Mixed.driveKS,
+            Constants.Swerve.Mixed.driveKV, Constants.Swerve.Mixed.driveKA);
 
     SwerveModuleConstants constants;
 
@@ -98,7 +97,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         this.driveMotor.configFactoryDefault();
         this.driveMotor.configAllSettings(CTREConfigs.swerveDriveFXConfig);
         this.driveMotor.setInverted(Constants.Swerve.driveMotorInvert);
-        this.driveMotor.setNeutralMode(Constants.Swerve.driveNeutralMode);
+        this.driveMotor.setNeutralMode(Constants.Swerve.Mixed.driveNeutralMode);
         this.driveMotor.setSelectedSensorPosition(0);
     }
 
@@ -107,7 +106,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         this.steeringMotor.setInverted(true);
         this.steeringMotor.setSmartCurrentLimit(Constants.Swerve.anglePeakCurrentLimit,
                 Constants.Swerve.angleContinuousCurrentLimit);
-        this.steeringMotor.setIdleMode(IdleMode.kCoast);
+        this.steeringMotor.setIdleMode(Constants.Swerve.Mixed.angleNeutralMode);
     }
 
     private void resetAbsolutePosition() {

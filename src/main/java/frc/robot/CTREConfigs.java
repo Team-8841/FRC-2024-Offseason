@@ -24,11 +24,13 @@ public final class CTREConfigs {
                 Constants.Swerve.anglePeakCurrentLimit,
                 Constants.Swerve.anglePeakCurrentDuration);
 
+        /*
         swerveAngleFXConfig.slot0.kP = Constants.Swerve.angleKP;
         swerveAngleFXConfig.slot0.kI = Constants.Swerve.angleKI;
         swerveAngleFXConfig.slot0.kD = Constants.Swerve.angleKD;
         swerveAngleFXConfig.slot0.kF = Constants.Swerve.angleKF;
         swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
+        */
 
         /* Swerve Drive Motor Configuration */
         SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(
@@ -37,6 +39,7 @@ public final class CTREConfigs {
                 Constants.Swerve.drivePeakCurrentLimit,
                 Constants.Swerve.drivePeakCurrentDuration);
 
+        /*
         swerveDriveFXConfig.slot0.kP = Constants.Swerve.driveKP;
         swerveDriveFXConfig.slot0.kI = Constants.Swerve.driveKI;
         swerveDriveFXConfig.slot0.kD = Constants.Swerve.driveKD;
@@ -44,6 +47,7 @@ public final class CTREConfigs {
         swerveDriveFXConfig.supplyCurrLimit = driveSupplyLimit;
         swerveDriveFXConfig.openloopRamp = Constants.Swerve.openLoopRamp;
         swerveDriveFXConfig.closedloopRamp = Constants.Swerve.closedLoopRamp;
+        */
 
         /* Swerve CANCoder Configuration */
         swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
