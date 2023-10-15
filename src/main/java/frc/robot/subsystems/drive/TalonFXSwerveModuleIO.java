@@ -4,8 +4,8 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -25,8 +25,8 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     private Rotation2d lastAngle;
 
-    VelocityVoltage driveVelVoltage = new VelocityVoltage(0).withSlot(0);
-    PositionVoltage steeringPosVoltage = new PositionVoltage(0).withSlot(0);
+    VelocityDutyCycle driveVelVoltage = new VelocityDutyCycle(0).withSlot(0);
+    PositionDutyCycle steeringPosVoltage = new PositionDutyCycle(0).withSlot(0);
 
     SwerveModuleConstants constants;
 

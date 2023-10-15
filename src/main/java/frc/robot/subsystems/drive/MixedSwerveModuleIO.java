@@ -2,7 +2,7 @@ package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -31,7 +31,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
     PIDController steeringPID = new PIDController(MixedMotorConstants.angleKP, MixedMotorConstants.angleKI,
                 MixedMotorConstants.angleKD);
 
-    VelocityVoltage driveVelVoltage = new VelocityVoltage(0).withSlot(0);
+    VelocityDutyCycle driveVelDutyCycle = new VelocityDutyCycle(0).withSlot(0);
 
     SwerveModuleConstants constants;
 
@@ -120,7 +120,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         // Closed loop
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
                 SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
-        this.driveMotor.setControl(this.driveVelVoltage.withVelocity(velocity));
+        this.driveMotor.setControl(this.driveVelDutyCycle.withVelocity(velocity));
     }
 
     @Override
