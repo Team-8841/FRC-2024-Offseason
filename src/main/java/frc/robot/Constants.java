@@ -1,6 +1,20 @@
+// Shallow graves to all dead rats (i like the dark clouds the best)
+
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.ClosedLoopGeneralConfigs;
+import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,7 +22,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
@@ -49,11 +62,11 @@ public final class Constants {
         public static final double angleGearRatio = chosenModule.angleGearRatio;
 
         /* Motor Inverts */
-        public static final boolean angleMotorInvert = chosenModule.angleMotorInvert;
-        public static final boolean driveMotorInvert = chosenModule.driveMotorInvert;
+        public static final InvertedValue angleMotorInvert = chosenModule.angleMotorInvert;
+        public static final InvertedValue driveMotorInvert = chosenModule.driveMotorInvert;
 
         /* Angle Encoder Invert */
-        public static final boolean canCoderInvert = chosenModule.canCoderInvert;
+        public static final SensorDirectionValue canCoderDir = chosenModule.canCoderDir;
 
         /* Swerve Current Limiting */
         /*
@@ -84,7 +97,20 @@ public final class Constants {
         /** Radians per Second */
         public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
 
+        /* Motor/encoder specific */
+
+        public static final CANcoderConfiguration canCoderConfigs = new CANcoderConfiguration();
+
+        static {
+            MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
+            magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+            magnetSensorConfigs.SensorDirection = Constants.Swerve.canCoderDir;
+        }
+
         public static final class PureTalonFX {
+            public static final TalonFXConfiguration angleMotorConfigs = new TalonFXConfiguration();
+            public static final TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
+
             /* Angle Motor PID Values */
             public static final double angleKP = chosenModule.angleKP;
             public static final double angleKI = chosenModule.angleKI;
@@ -95,7 +121,6 @@ public final class Constants {
             public static final double driveKP = 0.05; // TODO: This must be tuned to specific robot
             public static final double driveKI = 0.0;
             public static final double driveKD = 0.0;
-            public static final double driveKF = 0.0;
 
             /*
              * Drive Motor Characterization Values
@@ -103,11 +128,11 @@ public final class Constants {
              */
             public static final double driveKS = (0.32 / 12); // TODO: This must be tuned to specific robot
             public static final double driveKV = (1.51 / 12);
-            public static final double driveKA = (0.27 / 12);
+            public static final double driveKA = (0.27 / 12); // (unused)
 
             /* Neutral Modes */
-            public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
-            public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+            public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
+            public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
             /* Module Specific Constants */
             /* Front Left Module - Module 0 */
@@ -149,9 +174,68 @@ public final class Constants {
                 public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                         angleMotorID, canCoderID, angleOffset, 3);
             }
+
+            static {
+                /* Drive motor */
+
+                Slot0Configs drivePIDConfigs = new Slot0Configs();
+                drivePIDConfigs.kP = driveKP;
+                drivePIDConfigs.kI = driveKI;
+                drivePIDConfigs.kD = driveKD;
+                drivePIDConfigs.kS = driveKS;
+                drivePIDConfigs.kV = driveKV;
+                driveMotorConfigs.Slot0 = drivePIDConfigs;
+
+                CurrentLimitsConfigs driveCurrentLimit = new CurrentLimitsConfigs();
+                driveCurrentLimit.SupplyCurrentLimitEnable = Constants.Swerve.driveEnableCurrentLimit;
+                driveCurrentLimit.SupplyCurrentLimit = Constants.Swerve.driveContinuousCurrentLimit;
+                driveCurrentLimit.SupplyCurrentThreshold = Constants.Swerve.drivePeakCurrentLimit;
+                driveCurrentLimit.SupplyTimeThreshold = Constants.Swerve.drivePeakCurrentDuration;
+                driveMotorConfigs.CurrentLimits = driveCurrentLimit;
+
+                OpenLoopRampsConfigs driveOpenRampConfigs = new OpenLoopRampsConfigs();
+                driveOpenRampConfigs.VoltageOpenLoopRampPeriod = Constants.Swerve.openLoopRamp;
+                driveMotorConfigs.OpenLoopRamps = driveOpenRampConfigs;
+
+                ClosedLoopRampsConfigs driveClosedRampConfigs = new ClosedLoopRampsConfigs();
+                driveClosedRampConfigs.VoltageClosedLoopRampPeriod = Constants.Swerve.closedLoopRamp;
+                driveMotorConfigs.ClosedLoopRamps = driveClosedRampConfigs;
+
+                MotorOutputConfigs driveMotorOutConfigs = new MotorOutputConfigs();
+                driveMotorOutConfigs.Inverted = Constants.Swerve.driveMotorInvert;
+                driveMotorOutConfigs.NeutralMode = Constants.Swerve.PureTalonFX.driveNeutralMode;
+                driveMotorConfigs.MotorOutput = driveMotorOutConfigs;
+
+                /* Angle motor */
+
+                Slot0Configs anglePIDConfigs = new Slot0Configs();
+                anglePIDConfigs.kP = angleKP;
+                anglePIDConfigs.kI = angleKI;
+                anglePIDConfigs.kD = angleKD;
+                anglePIDConfigs.kV = angleKF;
+                angleMotorConfigs.Slot0 = anglePIDConfigs;
+
+                CurrentLimitsConfigs angleCurrentConfigs = new CurrentLimitsConfigs();
+                angleCurrentConfigs.SupplyCurrentLimitEnable = Constants.Swerve.angleEnableCurrentLimit;
+                angleCurrentConfigs.SupplyCurrentLimit = Constants.Swerve.angleContinuousCurrentLimit;
+                angleCurrentConfigs.SupplyCurrentThreshold = Constants.Swerve.anglePeakCurrentLimit;
+                angleCurrentConfigs.SupplyTimeThreshold = Constants.Swerve.anglePeakCurrentDuration;
+                angleMotorConfigs.CurrentLimits = angleCurrentConfigs;
+
+                ClosedLoopGeneralConfigs angleClosedGeneralConfigs = new ClosedLoopGeneralConfigs();
+                angleClosedGeneralConfigs.ContinuousWrap = true;
+                angleMotorConfigs.ClosedLoopGeneral = angleClosedGeneralConfigs;
+
+                MotorOutputConfigs angleMotorOutConfigs = new MotorOutputConfigs();
+                angleMotorOutConfigs.Inverted = Constants.Swerve.angleMotorInvert;
+                angleMotorOutConfigs.NeutralMode = Constants.Swerve.PureTalonFX.angleNeutralMode;
+                angleMotorConfigs.MotorOutput = angleMotorOutConfigs;
+            }
         }
 
         public static final class Mixed {
+            public static final TalonFXConfiguration driveMotorConfigs = new TalonFXConfiguration();
+
             /* Angle Motor PID Values */
             public static final double angleKP = chosenModule.angleKP;
             public static final double angleKI = chosenModule.angleKI;
@@ -162,7 +246,6 @@ public final class Constants {
             public static final double driveKP = 0.05; // TODO: This must be tuned to specific robot
             public static final double driveKI = 0.0;
             public static final double driveKD = 0.0;
-            public static final double driveKF = 0.0;
 
             /*
              * Drive Motor Characterization Values
@@ -174,7 +257,7 @@ public final class Constants {
 
             /* Neutral Modes */
             public static final IdleMode angleNeutralMode = IdleMode.kCoast;
-            public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+            public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
             /* Module Specific Constants */
             /* Front Left Module - Module 0 */
@@ -215,6 +298,38 @@ public final class Constants {
                 public static final Rotation2d angleOffset = Rotation2d.fromDegrees(0.0);
                 public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                         angleMotorID, canCoderID, angleOffset, 3);
+            }
+
+            static {
+                /* Drive motor */
+
+                Slot0Configs drivePIDConfigs = new Slot0Configs();
+                drivePIDConfigs.kP = driveKP;
+                drivePIDConfigs.kI = driveKI;
+                drivePIDConfigs.kD = driveKD;
+                drivePIDConfigs.kS = driveKS;
+                drivePIDConfigs.kV = driveKV;
+                driveMotorConfigs.Slot0 = drivePIDConfigs;
+
+                CurrentLimitsConfigs driveCurrentLimit = new CurrentLimitsConfigs();
+                driveCurrentLimit.SupplyCurrentLimitEnable = Constants.Swerve.driveEnableCurrentLimit;
+                driveCurrentLimit.SupplyCurrentLimit = Constants.Swerve.driveContinuousCurrentLimit;
+                driveCurrentLimit.SupplyCurrentThreshold = Constants.Swerve.drivePeakCurrentLimit;
+                driveCurrentLimit.SupplyTimeThreshold = Constants.Swerve.drivePeakCurrentDuration;
+                driveMotorConfigs.CurrentLimits = driveCurrentLimit;
+
+                OpenLoopRampsConfigs driveOpenRampConfigs = new OpenLoopRampsConfigs();
+                driveOpenRampConfigs.VoltageOpenLoopRampPeriod = Constants.Swerve.openLoopRamp;
+                driveMotorConfigs.OpenLoopRamps = driveOpenRampConfigs;
+
+                ClosedLoopRampsConfigs driveClosedRampConfigs = new ClosedLoopRampsConfigs();
+                driveClosedRampConfigs.VoltageClosedLoopRampPeriod = Constants.Swerve.closedLoopRamp;
+                driveMotorConfigs.ClosedLoopRamps = driveClosedRampConfigs;
+
+                MotorOutputConfigs driveMotorOutConfigs = new MotorOutputConfigs();
+                driveMotorOutConfigs.Inverted = Constants.Swerve.driveMotorInvert;
+                driveMotorOutConfigs.NeutralMode = Constants.Swerve.PureTalonFX.driveNeutralMode;
+                driveMotorConfigs.MotorOutput = driveMotorOutConfigs;
             }
         }
     }
