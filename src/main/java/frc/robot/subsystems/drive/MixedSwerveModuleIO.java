@@ -2,9 +2,11 @@ package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -53,7 +55,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
         this.configDriveMotor();
         this.configSteeringMotor();
-        this.configAngleEncoder();
+        this.configSteeringEncoder();
         this.resetAbsolutePosition();
 
         // Sets the setpoint for the steering motor to the absolute position of the
@@ -83,11 +85,13 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
                 constants);
     }
 
-    private void configAngleEncoder() {
+    private void configSteeringEncoder() {
         CANcoderConfigurator configurator = this.steeringEncoder.getConfigurator();
-        CANcoderConfiguration configuration = SwerveConstants.canCoderConfigs;
-        configuration.MagnetSensor.MagnetOffset = -this.constants.angleOffset.getRotations();
-        configurator.apply(configuration);
+        MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
+        magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        magnetSensorConfigs.SensorDirection = SwerveConstants.canCoderDir;
+        magnetSensorConfigs.MagnetOffset = -this.constants.angleOffset.getRotations();
+        configurator.apply(magnetSensorConfigs);
     }
 
     private void configDriveMotor() {

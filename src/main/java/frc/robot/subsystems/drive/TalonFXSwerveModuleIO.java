@@ -3,11 +3,13 @@ package frc.robot.subsystems.drive;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -65,9 +67,11 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     private void configSteeringEncoder() {
         CANcoderConfigurator configurator = this.steeringEncoder.getConfigurator();
-        CANcoderConfiguration configs = SwerveConstants.canCoderConfigs;
-        configs.MagnetSensor.MagnetOffset = -this.constants.angleOffset.getRotations();
-        configurator.apply(configs);
+        MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
+        magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        magnetSensorConfigs.SensorDirection = SwerveConstants.canCoderDir;
+        magnetSensorConfigs.MagnetOffset = -this.constants.angleOffset.getRotations();
+        configurator.apply(magnetSensorConfigs);
     }
 
     private void configDriveMotor() {

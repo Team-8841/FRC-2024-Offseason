@@ -73,14 +73,4 @@ public class SwerveConstants {
     public static final double maxSpeed = 3; // TODO: This must be tuned to specific robot
     /** Radians per Second */
     public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
-
-    /* Motor/encoder specific */
-
-    public static final CANcoderConfiguration canCoderConfigs = new CANcoderConfiguration();
-
-    static {
-        MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
-        magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-        magnetSensorConfigs.SensorDirection = SwerveConstants.canCoderDir;
-    }
 }
