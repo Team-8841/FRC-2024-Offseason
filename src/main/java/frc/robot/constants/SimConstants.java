@@ -1,6 +1,7 @@
-package frc.robot;
+package frc.robot.constants;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import frc.robot.constants.swerve.SwerveConstants;
 
 public class SimConstants {
     public static class Swerve {
@@ -16,14 +17,14 @@ public class SimConstants {
         public static final DCMotor steeringGearbox = DCMotor.getFalcon500(1);
         public static final DCMotor driveGearbox = DCMotor.getFalcon500(1);
 
-        public static final double steeringGearRatio = Constants.Swerve.chosenModule.angleGearRatio;
-        public static final double driveGearRatio = Constants.Swerve.chosenModule.driveGearRatio;
+        public static final double steeringGearRatio = SwerveConstants.chosenModule.angleGearRatio;
+        public static final double driveGearRatio = SwerveConstants.chosenModule.driveGearRatio;
 
         // Modeled as solid cylinders (kg*m^2)
         public static final double steeringInertia = 0.5 * 10 * Math.pow(0.1, 2);
         public static final double driveInertia = 0.5 * 10 * Math.pow(0.1, 2);
 
-        public static final double wheelCircumference = Constants.Swerve.chosenModule.wheelCircumference;
-        public static final double wheelDiameter = Constants.Swerve.chosenModule.wheelDiameter;
+        public static final double wheelCircumference = SwerveConstants.chosenModule.wheelCircumference;
+        public static final double wheelDiameter = SwerveConstants.chosenModule.wheelDiameter;
     }
 }

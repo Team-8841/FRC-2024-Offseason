@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.SimConstants;
+import frc.robot.constants.SimConstants;
 
 public class SimSwerveModuleIO implements SwerveModuleIO {
     DCMotorSim steeringMotor = new DCMotorSim(SimConstants.Swerve.steeringGearbox,

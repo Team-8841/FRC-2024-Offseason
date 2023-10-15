@@ -16,7 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Constants;
+import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.constants.swerve.SwerveConstants;
 
 public class MixedSwerveModuleIO implements SwerveModuleIO {
     private TalonFX driveMotor;
@@ -27,8 +28,8 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
     // I would've liked to use closed loop control on the neo but the cancoder can't
     // be attached to the sparkmax :/
-    PIDController steeringPID = new PIDController(Constants.Swerve.Mixed.angleKP, Constants.Swerve.Mixed.angleKI,
-                Constants.Swerve.Mixed.angleKD);
+    PIDController steeringPID = new PIDController(MixedMotorConstants.angleKP, MixedMotorConstants.angleKI,
+                MixedMotorConstants.angleKD);
 
     VelocityVoltage driveVelVoltage = new VelocityVoltage(0).withSlot(0);
 
@@ -84,21 +85,21 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
     private void configAngleEncoder() {
         CANcoderConfigurator configurator = this.steeringEncoder.getConfigurator();
-        CANcoderConfiguration configuration = Constants.Swerve.canCoderConfigs;
+        CANcoderConfiguration configuration = SwerveConstants.canCoderConfigs;
         configuration.MagnetSensor.MagnetOffset = -this.constants.angleOffset.getRotations();
         configurator.apply(configuration);
     }
 
     private void configDriveMotor() {
-        this.driveMotor.getConfigurator().apply(Constants.Swerve.Mixed.driveMotorConfigs);
+        this.driveMotor.getConfigurator().apply(MixedMotorConstants.driveMotorConfigs);
     }
 
     private void configSteeringMotor() {
         this.steeringMotor.restoreFactoryDefaults();
-        this.steeringMotor.setInverted(Constants.Swerve.angleMotorInvert == InvertedValue.Clockwise_Positive);
-        this.steeringMotor.setSmartCurrentLimit(Constants.Swerve.anglePeakCurrentLimit,
-                Constants.Swerve.angleContinuousCurrentLimit);
-        this.steeringMotor.setIdleMode(Constants.Swerve.Mixed.angleNeutralMode);
+        this.steeringMotor.setInverted(SwerveConstants.angleMotorInvert == InvertedValue.Clockwise_Positive);
+        this.steeringMotor.setSmartCurrentLimit(SwerveConstants.anglePeakCurrentLimit,
+                SwerveConstants.angleContinuousCurrentLimit);
+        this.steeringMotor.setIdleMode(MixedMotorConstants.angleNeutralMode);
     }
 
     private void resetAbsolutePosition() {
@@ -118,14 +119,14 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
     public void setSpeed(SwerveModuleState desiredState) {
         // Closed loop
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
-                Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio);
+                SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
         this.driveMotor.setControl(this.driveVelVoltage.withVelocity(velocity));
     }
 
     @Override
     public void setAngle(SwerveModuleState desiredState) {
         // Prevent rotating module if speed is less then 1%. Prevents Jittering.
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01))
                 ? lastAngle
                 : desiredState.angle;
 
@@ -139,7 +140,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
         return new SwerveModuleState(
                 Conversions.rotsToMeters(this.driveMotor.getVelocity().getValue(),
-                        Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio),
+                        SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
 
@@ -149,7 +150,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
         return new SwerveModulePosition(
                 Conversions.rotsToMeters(this.driveMotor.getPosition().getValue(),
-                        Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio),
+                        SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
 

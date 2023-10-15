@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
@@ -35,10 +36,10 @@ public class RobotContainer {
 
     if (RobotBase.isReal()) {
       swerveModules = new SwerveModuleIO[] {
-          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod0.constants),
-          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod1.constants),
-          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod2.constants),
-          new TalonFXSwerveModuleIO(Constants.Swerve.PureTalonFX.Mod3.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants),
+          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
       };
       this.imu = new NavX2();
     } else {

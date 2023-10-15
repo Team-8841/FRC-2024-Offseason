@@ -15,12 +15,14 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.Constants;
 
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private Command teleopCommand;
   private RobotContainer robotContainer;
 
+  @SuppressWarnings("unused")
   private PowerDistribution pdh;
 
   private void cancelCommands() {

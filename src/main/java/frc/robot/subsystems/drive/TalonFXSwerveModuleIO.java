@@ -16,7 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Constants;
+import frc.robot.constants.swerve.PureTalonFXConstants;
+import frc.robot.constants.swerve.SwerveConstants;
 
 public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     private TalonFX driveMotor, steeringMotor;
@@ -64,23 +65,23 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
     private void configSteeringEncoder() {
         CANcoderConfigurator configurator = this.steeringEncoder.getConfigurator();
-        CANcoderConfiguration configs = Constants.Swerve.canCoderConfigs;
+        CANcoderConfiguration configs = SwerveConstants.canCoderConfigs;
         configs.MagnetSensor.MagnetOffset = -this.constants.angleOffset.getRotations();
         configurator.apply(configs);
     }
 
     private void configDriveMotor() {
-        this.driveMotor.getConfigurator().apply(Constants.Swerve.PureTalonFX.driveMotorConfigs);
+        this.driveMotor.getConfigurator().apply(PureTalonFXConstants.driveMotorConfigs);
     }
 
     private void configSteeringMotor() {
         TalonFXConfigurator configurator = this.steeringMotor.getConfigurator();
-        configurator.apply(Constants.Swerve.PureTalonFX.angleMotorConfigs);
+        configurator.apply(PureTalonFXConstants.angleMotorConfigs);
 
         FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
         feedbackConfigs.FeedbackRemoteSensorID = this.constants.cancoderID;
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        feedbackConfigs.RotorToSensorRatio = Constants.Swerve.angleGearRatio;
+        feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
     }
 
@@ -88,14 +89,14 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
     public void setSpeed(SwerveModuleState desiredState) {
         // Closed loop
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
-                Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio);
+                SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
         this.driveMotor.setControl(this.driveVelVoltage.withVelocity(velocity));
     }
 
     @Override
     public void setAngle(SwerveModuleState desiredState) {
         // Prevent rotating module if speed is less then 1%. Prevents Jittering.
-        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01))
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01))
                 ? lastAngle
                 : desiredState.angle;
 
@@ -110,7 +111,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
         return new SwerveModuleState(
                 Conversions.rotsToMeters(this.driveMotor.getVelocity().getValue(),
-                        Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio),
+                        SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
 
@@ -120,7 +121,7 @@ public class TalonFXSwerveModuleIO implements SwerveModuleIO {
 
         return new SwerveModulePosition(
                 Conversions.rotsToMeters(this.driveMotor.getPosition().getValue(),
-                        Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio),
+                        SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
 
