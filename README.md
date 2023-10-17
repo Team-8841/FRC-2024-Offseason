@@ -10,10 +10,10 @@ To generate the javadocs run `./gradlew generateDocs` in the root directory of t
 
 [AdvantageKit (Team 6328)](https://github.com/Mechanical-Advantage/AdvantageKit)
 
-[NavX (Kauai Labs)](https://dev.studica.com/releases/2023/NavX.json)
+[NavX (Kauai Labs)](https://pdocs.kauailabs.com/navx-mxp/software/)
 
-[Pheonix (CTR-Electronics)](https://maven.ctr-electronics.com/release/com/ctre/phoenix/Phoenix5-frc2023-latest.json)
+[Pheonix 6 (CTR-Electronics)](https://pro.docs.ctr-electronics.com/en/latest/index.html)
 
-[REVLib (REV Robotics)](https://software-metadata.revrobotics.com/REVLib-2023.json)
+[REVLib (REV Robotics)](https://www.revrobotics.com/software/)
 
 We also used a lot of code from [BaseFalconSwerve (Team 364)](https://github.com/Team364/BaseFalconSwerve/), most notably `src/main/java/frc/lib/**` (basically verbatim) and several other files.
