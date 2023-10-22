@@ -12,11 +12,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
+import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
+import frc.robot.subsystems.drive.DummySwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
@@ -35,14 +38,28 @@ public class RobotContainer {
     SwerveModuleIO swerveModules[];
 
     if (RobotBase.isReal()) {
+      // Real robot
       swerveModules = new SwerveModuleIO[] {
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants),
           new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
       };
+
       this.imu = new NavX2();
-    } else {
+    } else if (Constants.simReplay) {
+      // Replay
+      swerveModules = new SwerveModuleIO[] {
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+      };
+
+      this.imu = new DummyIMU();
+    }
+    else {
+      // Physics sim
       swerveModules = new SwerveModuleIO[] {
           new SimSwerveModuleIO(),
           new SimSwerveModuleIO(),

@@ -49,7 +49,7 @@ public class NavX2 extends IMU {
 
     @Override
     public boolean isInitialized() {
-        return true;
+        return this.ahrs.isCalibrating();
     }
 
     @Override

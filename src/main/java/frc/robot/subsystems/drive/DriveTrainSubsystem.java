@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SimManager;
+import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.SwerveConstants;
 import frc.robot.sensors.imu.IMU;
 
@@ -29,6 +30,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private SwerveModuleIOInputsAutoLogged autologgedInputs[];
     private IMU imu;
 
+    @SuppressWarnings("all")
     public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
         this.swerveModules = swerveModules;
         this.imu = imu;
@@ -47,7 +49,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
         this.resetModules();
 
         this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
-        if (RobotBase.isSimulation()) {
+
+        if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
         }
     }
