@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
@@ -163,10 +162,8 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         layout.addDouble("Angle", () -> this.getAngle().getDegrees());
         layout.addDouble("Speed", this::getSpeed);
         layout.addDouble("Position", () -> this.getPosition().distanceMeters);
-        /*
-        layout.addDouble("Drive Motor Stator Current", this.driveMotor::getStatorCurrent);
-        layout.addDouble("Drive Motor Supply Current", this.driveMotor::getSupplyCurrent);
+        layout.addDouble("Drive Motor Stator Current", () -> this.driveMotor.getStatorCurrent().getValue());
+        layout.addDouble("Drive Motor Supply Current", () -> this.driveMotor.getSupplyCurrent().getValue());
         layout.addDouble("Steering Motor Output Current", this.steeringMotor::getOutputCurrent);
-        */
     }
 }

@@ -1,8 +1,5 @@
 package frc.robot.constants.swerve;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
@@ -17,9 +14,9 @@ public class SwerveConstants {
             .SDSMK4(COTSFalconSwerveConstants.driveGearRatios.SDSMK4_L2);
 
     /* Drivetrain Constants */
-    public static final double trackWidth = Units.inchesToMeters(21.73); // TODO: This must be tuned to specific
+    public static final double trackWidth = Units.inchesToMeters(22.75); // TODO: This must be tuned to specific
                                                                             // robot
-    public static final double wheelBase = Units.inchesToMeters(21.73); // TODO: This must be tuned to specific
+    public static final double wheelBase = Units.inchesToMeters(24.5); // TODO: This must be tuned to specific
                                                                         // robot
     public static final double wheelCircumference = chosenModule.wheelCircumference;
 
