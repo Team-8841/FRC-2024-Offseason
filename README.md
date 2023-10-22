@@ -16,4 +16,6 @@ To generate the javadocs run `./gradlew generateDocs` in the root directory of t
 
 [REVLib (REV Robotics)](https://www.revrobotics.com/software/)
 
+[PhotonLib (PhotonVision)](https://docs.photonvision.org/en/latest/docs/programming/photonlib/adding-vendordep.html)
+
 We also used a lot of code from [BaseFalconSwerve (Team 364)](https://github.com/Team364/BaseFalconSwerve/), most notably `src/main/java/frc/lib/**` (basically verbatim) and several other files.
