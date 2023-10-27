@@ -58,7 +58,16 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    if (isReal()) {
+
+    // if (Robot.isSimulation()) {
+    //   NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    //   inst.stopServer();
+    //   // Change the IP address in the below function to the IP address you use to connect to the PhotonVision UI.
+    //   inst.setServer("photonvision.lan");
+    //   inst.startClient4("Robot Simulation");
+    // }
+
+    if (Robot.isReal()) {
       // Log to usb stick
       logger.addDataReceiver(new WPILOGWriter("/media/sda1/")); 
       // Logs to NT4
@@ -91,7 +100,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    if (isSimulation()) {
+    if (Robot.isSimulation()) {
       SimManager.getInstance().periodic();
     }
   }
