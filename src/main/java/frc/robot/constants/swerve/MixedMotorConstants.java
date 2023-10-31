@@ -82,7 +82,7 @@ public class MixedMotorConstants {
     }
 
     static {
-        /* Drive motor */
+        /* Angle/Steering motor */
         Slot0Configs anglePIDConfigs = new Slot0Configs();
         anglePIDConfigs.kP = angleKP;
         anglePIDConfigs.kI = angleKI;

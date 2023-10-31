@@ -1,13 +1,10 @@
 package frc.robot.subsystems.drive;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -19,10 +16,10 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
@@ -38,12 +35,8 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
     private Rotation2d lastAngle;
 
-    // I would've liked to use closed loop control on the neo but the cancoder can't
-    // be attached to the sparkmax :/
-    PIDController steeringPID = new PIDController(MixedMotorConstants.angleKP, MixedMotorConstants.angleKI,
-                MixedMotorConstants.angleKD);
-
     PositionDutyCycle driveVelDutyCycle = new PositionDutyCycle(0).withSlot(0);
+    SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(MixedMotorConstants.driveKS, MixedMotorConstants.driveKV, MixedMotorConstants.driveKA);
 
     SwerveModuleConstants constants;
 
@@ -70,15 +63,15 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         // Sets the setpoint for the steering motor to the absolute position of the
         // sensor, which prevents the swerve module from instantly targeting going
         // forward at startup.
-        this.steeringPID.setSetpoint(this.steeringEncoder.getAbsolutePosition().getValue());
+        // this.steeringPID.setSetpoint(this.steeringEncoder.getAbsolutePosition().getValue());
 
         // Sets the PID so that if, for example, the setpoint is 10 and the measurement
         // value is 350, it's output is positive instead of negative so that it wraps
         // measurement eventually gets to 10 by wrapping around.
-        this.steeringPID.enableContinuousInput(0, 360);
+        // this.steeringPID.enableContinuousInput(0, 360);
 
         // PID will stop once it's 0.3 degrees away from the setpoint.
-        this.steeringPID.setTolerance(0.3);
+        // this.steeringPID.setTolerance(0.3);
     }
 
     /**
@@ -116,7 +109,7 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
         this.sparkMaxPID.setP(MixedMotorConstants.driveKP);
         this.sparkMaxPID.setI(MixedMotorConstants.driveKI);
         this.sparkMaxPID.setD(MixedMotorConstants.driveKD);
-        this.sparkMaxPID.setFF(MixedMotorConstants.driveKV);
+        this.sparkMaxPID.setFF(0);
         this.sparkMaxPID.setFeedbackDevice(this.driveMotor.getEncoder());
     }
 
@@ -132,14 +125,6 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
     }
 
     @Override
-    public void periodic() {
-        double power = this.steeringPID.calculate(this.steeringEncoder.getAbsolutePosition().getValue());
-        if (!this.steeringPID.atSetpoint()) {
-            this.steeringMotor.set(power);
-        }
-    }
-
-    @Override
     public void setSpeed(SwerveModuleState desiredState) {
         // Closed loop
         /* 
@@ -150,7 +135,8 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
 
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
                 SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
-        this.sparkMaxPID.setReference(velocity * 60, ControlType.kVelocity);
+        double ff = this.driveFeedforward.calculate(desiredState.speedMetersPerSecond);
+        this.sparkMaxPID.setReference(velocity * 60, ControlType.kVelocity, 0, ff);
     }
 
     @Override
@@ -161,7 +147,6 @@ public class MixedSwerveModuleIO implements SwerveModuleIO {
                 : desiredState.angle;
         
         this.lastAngle = angle;
-        // this.steeringPID.setSetpoint(angle.getDegrees());
         this.steeringMotor.setControl(this.driveVelDutyCycle.withPosition(angle.getRotations()));
     }
 
