@@ -11,29 +11,26 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.Constants;
+import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand;
-  private Command teleopCommand;
+  private Command autonomousCommand, teleopCommand, testCommand;
   private RobotContainer robotContainer;
 
   @SuppressWarnings("unused")
   private PowerDistribution pdh;
-
-  private void cancelCommands() {
-    if (this.autonomousCommand != null) {
-      this.autonomousCommand.cancel();
-    }
-
-    if (this.teleopCommand != null) {
-      this.teleopCommand.cancel();
-    }
-  }
 
   @Override
   public void robotInit() {
@@ -64,7 +61,7 @@ public class Robot extends LoggedRobot {
       // Logs to NT4
       logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
-      this.pdh = new PowerDistribution(1, ModuleType.kRev); 
+      //this.pdh = new PowerDistribution(1, ModuleType.kRev); 
     } else if (Constants.simReplay) {
       // Run as fast as possible
       setUseTiming(false); 
@@ -107,7 +104,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    this.cancelCommands();
+    CommandScheduler.getInstance().cancelAll();
 
     this.autonomousCommand = robotContainer.getAutonomousCommand();
     if (this.autonomousCommand != null) {
@@ -123,7 +120,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    this.cancelCommands();
+    CommandScheduler.getInstance().cancelAll();
 
     this.teleopCommand = this.robotContainer.getTeleopCommand();
     if (this.teleopCommand != null) {
@@ -138,9 +135,16 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopExit() {}
 
+  //CANSparkMax tlNeo = new CANSparkMax(4, MotorType.kBrushless);
+  //TalonFX tlTalon = new TalonFX(6);
+  //MixedSwerveModuleIO swerve0 = new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants);
+
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+    //tlNeo.set(0.1);
+    //tlTalon.set(0.1);
+    // swerve0.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(10)));
   }
 
   @Override
@@ -148,5 +152,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+    //tlNeo.set(0);
+    //tlTalon.set(0);
+    // swerve0.setDesiredState(new SwerveModuleState());
+  }
 }

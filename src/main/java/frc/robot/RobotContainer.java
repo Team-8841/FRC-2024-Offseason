@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.constants.Constants;
+import frc.robot.constants.swerve.MixedMotorConstants;
 import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
@@ -20,6 +21,7 @@ import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
 import frc.robot.subsystems.drive.DummySwerveModuleIO;
+import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.TalonFXSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
@@ -37,13 +39,17 @@ public class RobotContainer {
   public RobotContainer() {
     SwerveModuleIO swerveModules[];
 
-    if (RobotBase.isReal()) {
+    if (true) {
       // Real robot
       swerveModules = new SwerveModuleIO[] {
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod0.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod1.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod2.constants),
-          new TalonFXSwerveModuleIO(PureTalonFXConstants.Mod3.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
+          // new DummySwerveModuleIO(),
+          // new DummySwerveModuleIO(),
+          // new DummySwerveModuleIO(),
+          // new DummySwerveModuleIO(),
       };
 
       this.imu = new NavX2();
