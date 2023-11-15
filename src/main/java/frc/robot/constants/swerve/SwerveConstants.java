@@ -38,11 +38,11 @@ public class SwerveConstants {
     public static final double angleGearRatio = chosenModule.angleGearRatio;
 
     /* Motor Inverts */
-    public static final InvertedValue angleMotorInvert = chosenModule.angleMotorInvert;
-    public static final InvertedValue driveMotorInvert = chosenModule.driveMotorInvert;
+    public static final InvertedValue angleMotorInvert = chosenModule.angleMotorInvert == InvertedValue.Clockwise_Positive ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+    public static final InvertedValue driveMotorInvert = chosenModule.driveMotorInvert == InvertedValue.Clockwise_Positive ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
 
     /* Angle Encoder Invert */
-    public static final SensorDirectionValue canCoderDir = chosenModule.canCoderDir;
+    public static final SensorDirectionValue canCoderDir = chosenModule.canCoderDir == SensorDirectionValue.Clockwise_Positive ? SensorDirectionValue.CounterClockwise_Positive : SensorDirectionValue.Clockwise_Positive;
 
     /* Swerve Current Limiting */
     /*

@@ -101,7 +101,7 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
         this.sparkMaxPID.setI(MixedMotorConstants.driveKI);
         this.sparkMaxPID.setD(MixedMotorConstants.driveKD);
         this.sparkMaxPID.setFF(0);
-        this.sparkMaxPID.setFeedbackDevice(this.driveMotor.getEncoder());
+        //this.sparkMaxPID.setFeedbackDevice(this.driveMotor.getEncoder());
     }
 
     private void configSteeringMotor() {
