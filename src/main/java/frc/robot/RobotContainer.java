@@ -12,11 +12,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.constants.Constants;
+import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
 import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
-import frc.robot.subsystems.drive.Falcon500SwerveModuleIO;
+import frc.robot.subsystems.drive.DummySwerveModuleIO;
+import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 
@@ -34,14 +38,28 @@ public class RobotContainer {
     SwerveModuleIO swerveModules[];
 
     if (RobotBase.isReal()) {
+      // Real robot
       swerveModules = new SwerveModuleIO[] {
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod0.constants),
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod1.constants),
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod2.constants),
-          new Falcon500SwerveModuleIO(Constants.Swerve.Mod3.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
       };
+
       this.imu = new NavX2();
-    } else {
+    } else if (Constants.simReplay) {
+      // Replay
+      swerveModules = new SwerveModuleIO[] {
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+      };
+
+      this.imu = new DummyIMU();
+    }
+    else {
+      // Physics sim
       swerveModules = new SwerveModuleIO[] {
           new SimSwerveModuleIO(),
           new SimSwerveModuleIO(),

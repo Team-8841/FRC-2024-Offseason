@@ -9,22 +9,22 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.SimConstants;
+import frc.robot.constants.SimConstants;
 
 public class SimSwerveModuleIO implements SwerveModuleIO {
-    DCMotorSim steeringMotor = new DCMotorSim(SimConstants.Swerve.steeringGearbox,
-            SimConstants.Swerve.steeringGearRatio, SimConstants.Swerve.steeringInertia);
-    DCMotorSim driveMotor = new DCMotorSim(SimConstants.Swerve.driveGearbox, SimConstants.Swerve.driveGearRatio,
-            SimConstants.Swerve.driveInertia);
+    DCMotorSim steeringMotor = new DCMotorSim(SimConstants.steeringGearbox,
+            SimConstants.steeringGearRatio, SimConstants.steeringInertia);
+    DCMotorSim driveMotor = new DCMotorSim(SimConstants.driveGearbox, SimConstants.driveGearRatio,
+            SimConstants.driveInertia);
 
-    PIDController steeringPID = new PIDController(SimConstants.Swerve.steeringKP, SimConstants.Swerve.steeringKI,
-            SimConstants.Swerve.steeringKD);
+    PIDController steeringPID = new PIDController(SimConstants.steeringKP, SimConstants.steeringKI,
+            SimConstants.steeringKD);
 
-    SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0, SimConstants.Swerve.driveKV);
-    PIDController drivePID = new PIDController(SimConstants.Swerve.driveKP, SimConstants.Swerve.driveKI,
-            SimConstants.Swerve.driveKD);
+    SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(0, SimConstants.driveKV);
+    PIDController drivePID = new PIDController(SimConstants.driveKP, SimConstants.driveKI,
+            SimConstants.driveKD);
 
-    private double totalDistanceDrove = 0;
+    private double totalDistanceDrove = 0, lastVelocity = 0;
     private long lastTimestamp;
 
     public SimSwerveModuleIO() {
@@ -36,11 +36,11 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
     }
 
     private double rad2WheelSpeed(double rad) {
-        return rad * SimConstants.Swerve.wheelDiameter / 2.0;
+        return rad * SimConstants.wheelDiameter / 2.0;
     }
 
     private double wheelSpeed2Rad(double wheelSpeed) {
-        return wheelSpeed * 2.0 / SimConstants.Swerve.wheelDiameter;
+        return wheelSpeed * 2.0 / SimConstants.wheelDiameter;
     }
 
     @Override
@@ -69,7 +69,9 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
         this.lastTimestamp = currentTimestamp;
         double dt = (currentTimestamp - lastTimestamp) / 1000000.0;
 
-        this.totalDistanceDrove += Math.abs(this.rad2WheelSpeed(this.driveMotor.getAngularVelocityRadPerSec())) * dt;
+        double currentVelocity = this.rad2WheelSpeed(this.driveMotor.getAngularVelocityRadPerSec());
+        this.totalDistanceDrove += (Math.abs(currentVelocity) + Math.abs(this.lastVelocity)) / 2 * dt;
+        this.lastVelocity = currentVelocity;
 
         this.steeringMotor.update(dt);
         this.driveMotor.update(dt);

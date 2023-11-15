@@ -1,45 +1,35 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.constants.swerve.PureTalonFXConstants;
 import frc.robot.constants.swerve.SwerveConstants;
 
-public final class MixedSwerveModuleIO implements SwerveModuleIO {
-    private CANSparkMax driveMotor;
-    private TalonFX steeringMotor;
+public class TalonFXSwerveModuleIO implements SwerveModuleIO {
+    private TalonFX driveMotor, steeringMotor;
     private CANcoder steeringEncoder;
 
-    private SparkMaxPIDController sparkMaxPID;
+    private Rotation2d lastAngle;
 
-    private Rotation2d lastAngle = Rotation2d.fromDegrees(0);
+    VelocityDutyCycle driveVelVoltage = new VelocityDutyCycle(0).withSlot(0);
+    PositionDutyCycle steeringPosVoltage = new PositionDutyCycle(0).withSlot(0);
 
-    private PositionDutyCycle drivePosDutyCycle = new PositionDutyCycle(0).withSlot(0);
-    private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(MixedMotorConstants.driveKS, MixedMotorConstants.driveKV, MixedMotorConstants.driveKA);
-
-    private SwerveModuleConstants constants;
-
-    private StatusSignal<Double> angleSignal, angleStatorSignal, angleSupplySignal;
+    SwerveModuleConstants constants;
 
     /**
      * Creates a new container from each of the components.
@@ -50,8 +40,7 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
      * @param steeringEncoder The CTRE CANCoder attached to the steering motor.
      * @param constants Module specific constants.
      */
-    public MixedSwerveModuleIO(CANSparkMax driveMotor, TalonFX steeringMotor, CANcoder steeringEncoder,
-            SwerveModuleConstants constants) {
+    public TalonFXSwerveModuleIO(TalonFX driveMotor, TalonFX steeringMotor, CANcoder steeringEncoder, SwerveModuleConstants constants) {
         this.driveMotor = driveMotor;
         this.steeringMotor = steeringMotor;
         this.steeringEncoder = steeringEncoder;
@@ -60,20 +49,16 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
         this.configSteeringEncoder();
         this.configDriveMotor();
         this.configSteeringMotor();
-
-        angleSignal = this.steeringEncoder.getAbsolutePosition();
-        angleStatorSignal = this.steeringMotor.getStatorCurrent();
-        angleSupplySignal = this.steeringMotor.getSupplyCurrent();
     }
 
     /**
-     * Creates a new container from each of the components.
+     * Creates a new container from each of the component's CAN ID's.
      * 
      * @param constants Module specific constants.
      */
-    public MixedSwerveModuleIO(SwerveModuleConstants constants) {
+    public TalonFXSwerveModuleIO(SwerveModuleConstants constants) {
         this(
-                new CANSparkMax(constants.driveMotorID, MotorType.kBrushless),
+                new TalonFX(constants.driveMotorID),
                 new TalonFX(constants.angleMotorID),
                 new CANcoder(constants.cancoderID),
                 constants);
@@ -84,32 +69,20 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
         MagnetSensorConfigs magnetSensorConfigs = new MagnetSensorConfigs();
         magnetSensorConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
         magnetSensorConfigs.SensorDirection = SwerveConstants.canCoderDir;
-        magnetSensorConfigs.MagnetOffset = this.constants.angleOffset.getRotations();
-
+        magnetSensorConfigs.MagnetOffset = -this.constants.angleOffset.getRotations();
         configurator.apply(magnetSensorConfigs);
     }
 
     private void configDriveMotor() {
-        this.driveMotor.restoreFactoryDefaults();
-        this.driveMotor.setInverted(SwerveConstants.driveMotorInvert == InvertedValue.Clockwise_Positive);
-        this.driveMotor.setSmartCurrentLimit(SwerveConstants.drivePeakCurrentLimit,
-                SwerveConstants.driveContinuousCurrentLimit);
-        this.driveMotor.setIdleMode(MixedMotorConstants.driveNeutralMode);
-
-        this.sparkMaxPID = this.driveMotor.getPIDController();
-        this.sparkMaxPID.setP(MixedMotorConstants.driveKP);
-        this.sparkMaxPID.setI(MixedMotorConstants.driveKI);
-        this.sparkMaxPID.setD(MixedMotorConstants.driveKD);
-        this.sparkMaxPID.setFF(0);
-        //this.sparkMaxPID.setFeedbackDevice(this.driveMotor.getEncoder());
+        this.driveMotor.getConfigurator().apply(PureTalonFXConstants.driveMotorConfigs);
     }
 
     private void configSteeringMotor() {
-        var configurator = this.steeringMotor.getConfigurator();
-        configurator.apply(MixedMotorConstants.angleMotorConfigs);
+        TalonFXConfigurator configurator = this.steeringMotor.getConfigurator();
+        configurator.apply(PureTalonFXConstants.angleMotorConfigs);
 
-        var feedbackConfigs = new FeedbackConfigs();
-        feedbackConfigs.FeedbackRemoteSensorID = this.steeringEncoder.getDeviceID();
+        FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
+        feedbackConfigs.FeedbackRemoteSensorID = this.constants.cancoderID;
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         feedbackConfigs.RotorToSensorRatio = SwerveConstants.angleGearRatio;
         configurator.apply(feedbackConfigs);
@@ -120,36 +93,37 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
         // Closed loop
         double velocity = Conversions.metersToRots(desiredState.speedMetersPerSecond,
                 SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio);
-        double ff = this.driveFeedforward.calculate(desiredState.speedMetersPerSecond);
-        this.sparkMaxPID.setReference(velocity * 60, ControlType.kVelocity, 0, ff);
+        this.driveMotor.setControl(this.driveVelVoltage.withVelocity(velocity));
     }
 
     @Override
     public void setAngle(SwerveModuleState desiredState) {
         // Prevent rotating module if speed is less then 1%. Prevents Jittering.
-        var angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01))
+        Rotation2d angle = (Math.abs(desiredState.speedMetersPerSecond) <= (SwerveConstants.maxSpeed * 0.01))
                 ? lastAngle
                 : desiredState.angle;
+
         this.lastAngle = angle;
-        this.steeringMotor.setControl(this.drivePosDutyCycle.withPosition(angle.getRotations()));
+
+        this.steeringMotor.setControl(this.steeringPosVoltage.withPosition(angle.getRotations()));
     }
 
     @Override
     public SwerveModuleState getState() {
-        double angle = this.angleSignal.refresh().getValue();
+        double angle = this.steeringEncoder.getAbsolutePosition().getValue();
 
         return new SwerveModuleState(
-                Conversions.rotsToMeters(this.driveMotor.getEncoder().getVelocity() / 60,
+                Conversions.rotsToMeters(this.driveMotor.getVelocity().getValue(),
                         SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
 
     @Override
     public SwerveModulePosition getPosition() {
-        double angle = this.angleSignal.refresh().getValue();
+        double angle = this.steeringEncoder.getAbsolutePosition().getValue();
 
         return new SwerveModulePosition(
-                Conversions.rotsToMeters(this.driveMotor.getEncoder().getPosition(),
+                Conversions.rotsToMeters(this.driveMotor.getPosition().getValue(),
                         SwerveConstants.wheelCircumference, SwerveConstants.driveGearRatio),
                 Rotation2d.fromRotations(angle));
     }
@@ -159,8 +133,9 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
         layout.addDouble("Angle", () -> this.getAngle().getDegrees());
         layout.addDouble("Speed", this::getSpeed);
         layout.addDouble("Position", () -> this.getPosition().distanceMeters);
-        layout.addDouble("Angle Motor Stator Current", () -> this.angleStatorSignal.refresh().getValue());
-        layout.addDouble("Angle Motor Supply Current", () -> this.angleSupplySignal.refresh().getValue());
-        layout.addDouble("Drive Motor Output Current", () -> this.driveMotor.getOutputCurrent());
+        layout.addDouble("Drive Motor Stator Current", () -> this.driveMotor.getStatorCurrent().getValue());
+        layout.addDouble("Drive Motor Supply Current", () -> this.driveMotor.getSupplyCurrent().getValue());
+        layout.addDouble("Steering Motor Stator Current", () -> this.steeringMotor.getStatorCurrent().getValue());
+        layout.addDouble("Steering Motor Supply Current", () -> this.steeringMotor.getSupplyCurrent().getValue());
     }
 }

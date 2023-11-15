@@ -12,26 +12,16 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.Constants;
 
 public class Robot extends LoggedRobot {
-  private Command autonomousCommand;
-  private Command teleopCommand;
+  private Command autonomousCommand, teleopCommand;
   private RobotContainer robotContainer;
 
+  @SuppressWarnings("unused")
   private PowerDistribution pdh;
-
-  private void cancelCommands() {
-    if (this.autonomousCommand != null) {
-      this.autonomousCommand.cancel();
-    }
-
-    if (this.teleopCommand != null) {
-      this.teleopCommand.cancel();
-    }
-  }
 
   @Override
   public void robotInit() {
@@ -62,12 +52,12 @@ public class Robot extends LoggedRobot {
       // Logs to NT4
       logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
-      this.pdh = new PowerDistribution(1, ModuleType.kRev); 
+      //this.pdh = new PowerDistribution(1, ModuleType.kRev); 
     } else if (Constants.simReplay) {
       // Run as fast as possible
       setUseTiming(false); 
       // Get the replay log from AdvantageScope (or prompt the user)
-      String logPath = LogFileUtil.findReplayLog();;
+      String logPath = LogFileUtil.findReplayLog();
       // Read replay log
       logger.setReplaySource(new WPILOGReader(logPath)); 
       // Log to a file
@@ -105,7 +95,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    this.cancelCommands();
+    CommandScheduler.getInstance().cancelAll();
 
     this.autonomousCommand = robotContainer.getAutonomousCommand();
     if (this.autonomousCommand != null) {
@@ -121,7 +111,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    this.cancelCommands();
+    CommandScheduler.getInstance().cancelAll();
 
     this.teleopCommand = this.robotContainer.getTeleopCommand();
     if (this.teleopCommand != null) {
@@ -134,7 +124,8 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
   public void testInit() {
@@ -146,5 +137,6 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 }

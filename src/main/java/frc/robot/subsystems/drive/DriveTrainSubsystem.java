@@ -16,8 +16,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.SimManager;
+import frc.robot.constants.Constants;
+import frc.robot.constants.swerve.SwerveConstants;
 import frc.robot.sensors.imu.IMU;
 
 /**
@@ -29,6 +30,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     private SwerveModuleIOInputsAutoLogged autologgedInputs[];
     private IMU imu;
 
+    @SuppressWarnings("all")
     public DriveTrainSubsystem(SwerveModuleIO[] swerveModules, IMU imu) {
         this.swerveModules = swerveModules;
         this.imu = imu;
@@ -46,8 +48,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
         Timer.delay(1);
         this.resetModules();
 
-        this.swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, imu.getHeading(), this.getModulePositions());
-        if (RobotBase.isSimulation()) {
+        this.swerveOdometry = new SwerveDriveOdometry(SwerveConstants.swerveKinematics, imu.getHeading(), this.getModulePositions());
+
+        if (RobotBase.isSimulation() && !Constants.simReplay) {
             SimManager.getInstance().registerDriveTrain(this::getPose, this::getSpeed);
         }
     }
@@ -63,7 +66,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
         SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+            SwerveConstants.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
@@ -75,7 +78,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
                                     translation.getY(), 
                                     rotation)
                                 );
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
         for (int i = 0; i < this.swerveModules.length; i++) {
             Logger.getInstance().recordOutput("/Swerve/moduleState" + i, swerveModuleStates[i]);
@@ -87,7 +90,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     }
     
     public ChassisSpeeds getSpeed() {
-        return Constants.Swerve.swerveKinematics.toChassisSpeeds(this.getModuleStates());
+        return SwerveConstants.swerveKinematics.toChassisSpeeds(this.getModuleStates());
     }
     
     public Pose2d getPose() {
