@@ -29,17 +29,14 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
     private CANSparkMax driveMotor;
     private TalonFX steeringMotor;
     private CANcoder steeringEncoder;
-
     private SparkMaxPIDController sparkMaxPID;
+    private StatusSignal<Double> angleSignal, angleStatorSignal, angleSupplySignal;
 
-    private Rotation2d lastAngle = Rotation2d.fromDegrees(0);
-
-    private PositionDutyCycle drivePosDutyCycle = new PositionDutyCycle(0).withSlot(0);
     private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(MixedMotorConstants.driveKS, MixedMotorConstants.driveKV, MixedMotorConstants.driveKA);
-
+    private Rotation2d lastAngle = Rotation2d.fromDegrees(0);
+    private PositionDutyCycle drivePosDutyCycle = new PositionDutyCycle(0).withSlot(0);
     private SwerveModuleConstants constants;
 
-    private StatusSignal<Double> angleSignal, angleStatorSignal, angleSupplySignal;
 
     /**
      * Creates a new container from each of the components.
@@ -100,8 +97,8 @@ public final class MixedSwerveModuleIO implements SwerveModuleIO {
         this.sparkMaxPID.setP(MixedMotorConstants.driveKP);
         this.sparkMaxPID.setI(MixedMotorConstants.driveKI);
         this.sparkMaxPID.setD(MixedMotorConstants.driveKD);
+        // Feedforward (kV) is supplied externally
         this.sparkMaxPID.setFF(0);
-        //this.sparkMaxPID.setFeedbackDevice(this.driveMotor.getEncoder());
     }
 
     private void configSteeringMotor() {

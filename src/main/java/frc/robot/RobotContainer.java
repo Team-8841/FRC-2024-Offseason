@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.TestCommand;
 import frc.robot.constants.Constants;
 import frc.robot.constants.swerve.MixedMotorConstants;
 import frc.robot.sensors.imu.DummyIMU;
@@ -29,7 +30,7 @@ public class RobotContainer {
   private IMU imu;
 
   // Subsystems
-  private DriveTrainSubsystem sweveDriveTrain;
+  private DriveTrainSubsystem driveTrain;
 
   // Controllers
   private CommandXboxController driveController;
@@ -70,7 +71,7 @@ public class RobotContainer {
       this.imu = new SimIMU();
     }
 
-    this.sweveDriveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
+    this.driveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
 
     ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
     this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
@@ -87,8 +88,12 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand() {
-    return new TeleopSwerve(sweveDriveTrain, () -> -this.driveController.getLeftY(),
+    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
         () -> -this.driveController.getLeftX(),
         () -> -this.driveController.getRightX());
+  }
+
+  public Command getTestCommand() {
+    return new TestCommand(driveTrain);
   }
 }

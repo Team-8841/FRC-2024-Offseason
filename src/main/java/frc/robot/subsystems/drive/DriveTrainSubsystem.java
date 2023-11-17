@@ -81,7 +81,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, SwerveConstants.maxSpeed);
 
         for (int i = 0; i < this.swerveModules.length; i++) {
-            Logger.getInstance().recordOutput("/Swerve/moduleState" + i, swerveModuleStates[i]);
+            Logger.getInstance().recordOutput("/SwerveDrive/moduleState" + i, swerveModuleStates[i]);
 
             this.swerveModules[i].setDesiredState(swerveModuleStates[i]);
             this.autologgedInputs[i].setAngle = swerveModuleStates[i].angle.getDegrees();
@@ -130,7 +130,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
             SwerveModuleIO swerveModule = this.swerveModules[i];
             swerveModule.periodic();
             swerveModule.updateInputs(this.autologgedInputs[i]);
-            logger.processInputs("/SwerveDrive/Module" + i, this.autologgedInputs[i]);
+            logger.processInputs("/SwerveDriveInputs/Module" + i, this.autologgedInputs[i]);
         }
 
         this.swerveOdometry.update(this.imu.getHeading(), this.getModulePositions());
