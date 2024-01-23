@@ -12,19 +12,21 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.Constants;
 
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
-  private RobotContainer m_robotContainer;
+  private Command autonomousCommand, teleopCommand;
+  private RobotContainer robotContainer;
+  private Logger logger = Logger.getInstance();
 
+  @SuppressWarnings("unused")
   private PowerDistribution pdh;
 
   @Override
   public void robotInit() {
-    Logger logger = Logger.getInstance();
     
     // Record metadata
     logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -51,26 +53,43 @@ public class Robot extends LoggedRobot {
       // Logs to NT4
       logger.addDataReceiver(new NT4Publisher()); 
       // Enables logging of PDH data
-      this.pdh = new PowerDistribution(1, ModuleType.kRev); 
-    } else {
+      //this.pdh = new PowerDistribution(1, ModuleType.kRev); 
+    } else if (Constants.simReplay) {
       // Run as fast as possible
       setUseTiming(false); 
       // Get the replay log from AdvantageScope (or prompt the user)
-      String logPath = LogFileUtil.findReplayLog();;
+      String logPath = LogFileUtil.findReplayLog();
       // Read replay log
       logger.setReplaySource(new WPILOGReader(logPath)); 
       // Log to a file
       logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+    } else {
+      // Log to a file
+      logger.addDataReceiver(new WPILOGWriter("/tmp/sim.wpilog"));
+      // Logs to NT4
+      logger.addDataReceiver(new NT4Publisher()); 
     }
 
+    // Starts advantagekit's logger
     logger.start();
 
-    m_robotContainer = new RobotContainer();
+    robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    var canStatus = RobotController.getCANStatus();
+    logger.recordOutput("/CANStatus/busOffCount", canStatus.busOffCount);
+    logger.recordOutput("/CANStatus/percentBusUtilization", canStatus.percentBusUtilization);
+    logger.recordOutput("/CANStatus/receiveErrorCount", canStatus.receiveErrorCount);
+    logger.recordOutput("/CANStatus/transmitErrorCount", canStatus.transmitErrorCount);
+    logger.recordOutput("/CANStatus/txFullCount", canStatus.txFullCount);
+
+    if (isSimulation()) {
+      SimManager.getInstance().periodic();
+    }
   }
 
   @Override
@@ -84,10 +103,11 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    CommandScheduler.getInstance().cancelAll();
 
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    this.autonomousCommand = robotContainer.getAutonomousCommand();
+    if (this.autonomousCommand != null) {
+      this.autonomousCommand.schedule();
     }
   }
 
@@ -99,16 +119,21 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    CommandScheduler.getInstance().cancelAll();
+
+    this.teleopCommand = this.robotContainer.getTeleopCommand();
+    if (this.teleopCommand != null) {
+      this.teleopCommand.schedule();
     }
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+  }
 
   @Override
   public void testInit() {
@@ -116,8 +141,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+  }
 }

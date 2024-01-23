@@ -1,12 +1,13 @@
 package frc.robot.sensors.imu.BNO055;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import frc.robot.sensors.imu.IMU;
-import frc.robot.sensors.imu.Orientation;
 
 /**
  * IMU container for the BNO055.
  */
-public class BNO055 implements IMU {
+public class BNO055 extends IMU {
     private BNO055IO internalBNO055;
 
     public BNO055() {
@@ -15,10 +16,15 @@ public class BNO055 implements IMU {
     }
 
     @Override
-    public Orientation getOrientation() {
+    public Rotation3d getOrientation() {
         double[] vector = this.internalBNO055.getVector();
 
-        return new Orientation(vector[2], vector[1], vector[0]);
+        return new Rotation3d(vector[1], vector[2], vector[0]);
+    }
+
+    @Override
+    public Rotation2d getHeading() {
+        return this.getYaw();
     }
 
     @Override

@@ -5,12 +5,22 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.TestCommand;
+import frc.robot.constants.Constants;
+import frc.robot.constants.swerve.MixedMotorConstants;
+import frc.robot.sensors.imu.DummyIMU;
 import frc.robot.sensors.imu.IMU;
 import frc.robot.sensors.imu.NavX2;
-import frc.robot.sensors.imu.SimulatedIMU;
+import frc.robot.sensors.imu.SimIMU;
 import frc.robot.subsystems.drive.DriveTrainSubsystem;
+import frc.robot.subsystems.drive.DummySwerveModuleIO;
 import frc.robot.subsystems.drive.MixedSwerveModuleIO;
 import frc.robot.subsystems.drive.SimSwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO;
@@ -20,41 +30,70 @@ public class RobotContainer {
   private IMU imu;
 
   // Subsystems
-  private DriveTrainSubsystem sweveDriveTrainSubsystem;
+  private DriveTrainSubsystem driveTrain;
+
+  // Controllers
+  private CommandXboxController driveController;
 
   public RobotContainer() {
-    SwerveModuleIO blModule, brModule, tlModule, trModule;
+    SwerveModuleIO swerveModules[];
 
     if (RobotBase.isReal()) {
-      blModule = new MixedSwerveModuleIO(Constants.SWERVE_BL_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_BL_SPARK_STEERING_CAN_ID, Constants.SWERVE_BL_CANCODER_CAN_ID);
-      brModule = new MixedSwerveModuleIO(Constants.SWERVE_BR_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_BR_SPARK_STEERING_CAN_ID, Constants.SWERVE_BR_CANCODER_CAN_ID);
-      tlModule = new MixedSwerveModuleIO(Constants.SWERVE_TL_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_TL_SPARK_STEERING_CAN_ID, Constants.SWERVE_TL_CANCODER_CAN_ID);
-      trModule = new MixedSwerveModuleIO(Constants.SWERVE_TR_TALON_DRIVE_CAN_ID,
-          Constants.SWERVE_TR_SPARK_STEERING_CAN_ID, Constants.SWERVE_TR_CANCODER_CAN_ID);
+      // Real robot
+      swerveModules = new SwerveModuleIO[] {
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod0.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod1.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod2.constants),
+          new MixedSwerveModuleIO(MixedMotorConstants.Mod3.constants),
+      };
 
       this.imu = new NavX2();
+    } else if (Constants.simReplay) {
+      // Replay
+      swerveModules = new SwerveModuleIO[] {
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+          new DummySwerveModuleIO(),
+      };
+
+      this.imu = new DummyIMU();
     }
     else {
-      blModule = new SimSwerveModuleIO();
-      brModule = new SimSwerveModuleIO();
-      tlModule = new SimSwerveModuleIO();
-      trModule = new SimSwerveModuleIO();
+      // Physics sim
+      swerveModules = new SwerveModuleIO[] {
+          new SimSwerveModuleIO(),
+          new SimSwerveModuleIO(),
+          new SimSwerveModuleIO(),
+          new SimSwerveModuleIO(),
+      };
 
-      this.imu = new SimulatedIMU();
+      this.imu = new SimIMU();
     }
 
-    this.sweveDriveTrainSubsystem = new DriveTrainSubsystem(blModule, brModule, tlModule, trModule, this.imu);
+    this.driveTrain = new DriveTrainSubsystem(swerveModules, this.imu);
 
-    configureBindings();
+    ShuffleboardTab robotTab = Shuffleboard.getTab("Robot");
+    this.imu.initializeShuffleBoardLayout(robotTab.getLayout("IMU", BuiltInLayouts.kList));
+
+    this.driveController = new CommandXboxController(0);
+    this.configureBindings(this.driveController);
   }
 
-  private void configureBindings() {
+  private void configureBindings(CommandXboxController controller) {
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  public Command getTeleopCommand() {
+    return new TeleopSwerve(driveTrain, () -> -this.driveController.getLeftY(),
+        () -> -this.driveController.getLeftX(),
+        () -> -this.driveController.getRightX());
+  }
+
+  public Command getTestCommand() {
+    return new TestCommand(driveTrain);
   }
 }
